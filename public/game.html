@@ -156,12 +156,10 @@ main{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:50px 24p
 <body>
 
 <!-- ============================================================
-     BẢO MẬT TỐI THƯỢNG (ANTI-DEBUGGING)
-     Chặn F12, chuột phải, làm treo DevTools nếu cố tình mở
+     BẢO MẬT TỐI THƯỢNG (CHỐNG DEVTOOLS)
      ============================================================ -->
 <script>
 (function() {
-  // 1. Chặn chuột phải & phím tắt
   document.addEventListener('contextmenu', e => e.preventDefault());
   document.addEventListener('keydown', e => {
     if (e.key === 'F12' || 
@@ -172,25 +170,33 @@ main{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:50px 24p
     }
   });
 
-  // 2. Vòng lặp Debugger vô tận (Treo DevTools)
   function antiDebug() {
     function freeze() { debugger; }
     setInterval(freeze, 100);
     try { freeze(); } catch (e) {}
   }
 
-  // 3. Phát hiện kích thước thay đổi (Dock DevTools)
   let threshold = 160;
   function checkWindowSize() {
     if (window.outerWidth - window.innerWidth > threshold || 
         window.outerHeight - window.innerHeight > threshold) {
+      
+      const isPlaying = document.getElementById('viewPlay') && document.getElementById('viewPlay').classList.contains('active');
+      
+      if (isPlaying) {
+        // Nếu đang chơi game mà mở DevTools -> Đá văng ra ngoài
+        alert('⛔ Phát hiện DevTools! Bạn đã bị đẩy ra khỏi phòng chơi.');
+        window.location.href = '/game';
+        return;
+      }
+
       if (!document.getElementById('__anti_debug_overlay')) {
         const overlay = document.createElement('div');
         overlay.id = '__anti_debug_overlay';
         overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999999;color:#ff0033;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;flex-direction:column;text-align:center;';
         overlay.innerHTML = '<div>⛔ TRUY CẬP BỊ CHẶN</div><div style="font-size:16px;color:#fff;margin-top:10px;">Vui lòng đóng DevTools để tiếp tục!</div>';
         document.body.appendChild(overlay);
-        antiDebug(); // Kích hoạt treo máy
+        antiDebug();
       }
     }
   }
