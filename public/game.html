@@ -155,6 +155,49 @@ main{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:50px 24p
 </head>
 <body>
 
+<!-- ============================================================
+     BẢO MẬT TỐI THƯỢNG (ANTI-DEBUGGING)
+     Chặn F12, chuột phải, làm treo DevTools nếu cố tình mở
+     ============================================================ -->
+<script>
+(function() {
+  // 1. Chặn chuột phải & phím tắt
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('keydown', e => {
+    if (e.key === 'F12' || 
+        (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) ||
+        (e.ctrlKey && e.key.toUpperCase() === 'U')) {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  // 2. Vòng lặp Debugger vô tận (Treo DevTools)
+  function antiDebug() {
+    function freeze() { debugger; }
+    setInterval(freeze, 100);
+    try { freeze(); } catch (e) {}
+  }
+
+  // 3. Phát hiện kích thước thay đổi (Dock DevTools)
+  let threshold = 160;
+  function checkWindowSize() {
+    if (window.outerWidth - window.innerWidth > threshold || 
+        window.outerHeight - window.innerHeight > threshold) {
+      if (!document.getElementById('__anti_debug_overlay')) {
+        const overlay = document.createElement('div');
+        overlay.id = '__anti_debug_overlay';
+        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999999;color:#ff0033;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;flex-direction:column;text-align:center;';
+        overlay.innerHTML = '<div>⛔ TRUY CẬP BỊ CHẶN</div><div style="font-size:16px;color:#fff;margin-top:10px;">Vui lòng đóng DevTools để tiếp tục!</div>';
+        document.body.appendChild(overlay);
+        antiDebug(); // Kích hoạt treo máy
+      }
+    }
+  }
+  setInterval(checkWindowSize, 500);
+})();
+</script>
+
 <div id="viewKho" class="view active">
   <canvas id="bgCanvas"></canvas>
   <div class="aurora"><span></span><span></span><span></span><span></span></div>
@@ -254,56 +297,6 @@ main{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:50px 24p
 <div id="toast"></div>
 
 <script>
-/* ============================================================
-   1. BẢO MẬT (CHẶN F12 / DEVTOOLS)
-   ============================================================ */
-(function(){
-  document.addEventListener('contextmenu', e => {
-    const t = (e.target.tagName || '').toUpperCase();
-    if (t === 'INPUT' || t === 'TEXTAREA') return;
-    e.preventDefault();
-  });
-  document.addEventListener('keydown', e => {
-    const k = (e.key || '').toLowerCase();
-    if (k === 'f12') { e.preventDefault(); return; }
-    if (e.ctrlKey && e.shiftKey && ['i','j','c','k'].includes(k)) { e.preventDefault(); return; }
-    if (e.ctrlKey && k === 'u') { e.preventDefault(); return; }
-    if (e.ctrlKey && k === 's') { e.preventDefault(); return; }
-    if (e.ctrlKey && k === 'p') { e.preventDefault(); return; }
-    if (e.metaKey && e.altKey && ['i','j','c','u'].includes(k)) { e.preventDefault(); return; }
-  }, { capture: true });
-
-  let devtoolsOpen = false;
-  function checkDevTools(){
-    const t0 = performance.now();
-    debugger;
-    const t1 = performance.now();
-    if (t1 - t0 > 100) {
-      if (!devtoolsOpen) {
-        devtoolsOpen = true;
-        let ov = document.getElementById('__devtools_block');
-        if (!ov) {
-          ov = document.createElement('div');
-          ov.id = '__devtools_block';
-          ov.style.cssText = 'position:fixed;inset:0;z-index:999999;background:rgba(5,2,15,.98);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ff0033;font-family:sans-serif;text-align:center;padding:30px;backdrop-filter:blur(8px);';
-          ov.innerHTML = '<div style="font-size:60px;margin-bottom:20px;">⛔</div><h1 style="font-size:24px;font-weight:900;letter-spacing:2px;">PHÁT HIỆN DEVTOOLS</h1><p style="color:#8a8aa0;margin-top:10px;">Đóng DevTools (F12) để tiếp tục sử dụng!</p>';
-          document.body.appendChild(ov);
-        }
-      }
-    } else {
-      if (devtoolsOpen) {
-        devtoolsOpen = false;
-        const ov = document.getElementById('__devtools_block');
-        if (ov) ov.remove();
-      }
-    }
-  }
-  setInterval(checkDevTools, 1500);
-})();
-
-/* ============================================================
-   2. LOGIC KHO GAME
-   ============================================================ */
 let CURRENT_USER = null;
 
 (async () => {
@@ -343,9 +336,6 @@ function exitApp(){
   }
 }
 
-/* ============================================================
-   3. TOOL MD5 & TÀI XỈU
-   ============================================================ */
 const GAMES = {
   md5: { name: 'LC79 MD', icon: 'fa-fingerprint', gameUrl: 'https://play.lc79h.vin', toolKey: 'md5' },
   tx: { name: 'LC79 TÀI XỈU', icon: 'fa-dice', gameUrl: 'https://play.lc79h.vin', toolKey: 'tx' }
@@ -410,7 +400,6 @@ function backToKho(){
   document.getElementById('dropdown3Gach').classList.remove('show');
 }
 
-/* ROBOT */
 function toggleRobot(){
   const node = document.getElementById('robotMasterNode');
   node.style.display = node.style.display === 'none' ? 'block' : 'none';
@@ -484,9 +473,6 @@ function renderPrediction(data){
   }
 }
 
-/* ============================================================
-   4. NỀN ĐỘNG (CANVAS)
-   ============================================================ */
 (function(){
   const cvs = document.getElementById('bgCanvas');
   const ctx = cvs.getContext('2d');
