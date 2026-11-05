@@ -156,10 +156,11 @@ main{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:50px 24p
 <body>
 
 <!-- ============================================================
-     BẢO MẬT TỐI THƯỢNG (CHỐNG DEVTOOLS)
+     BẢO MẬT TỐI THƯỢNG (CHỐNG DEVTOOLS - BẢN FIX LỖI CHROME)
      ============================================================ -->
 <script>
 (function() {
+  // 1. Chặn chuột phải & phím tắt
   document.addEventListener('contextmenu', e => e.preventDefault());
   document.addEventListener('keydown', e => {
     if (e.key === 'F12' || 
@@ -170,34 +171,33 @@ main{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:50px 24p
     }
   });
 
-  function antiDebug() {
-    function freeze() { debugger; }
-    setInterval(freeze, 100);
-    try { freeze(); } catch (e) {}
-  }
-
+  // 2. Phát hiện DevTools mở bằng kích thước cửa sổ (Không dùng debugger nữa)
   let threshold = 160;
   function checkWindowSize() {
-    if (window.outerWidth - window.innerWidth > threshold || 
-        window.outerHeight - window.innerHeight > threshold) {
-      
-      const isPlaying = document.getElementById('viewPlay') && document.getElementById('viewPlay').classList.contains('active');
-      
+    const isDocked = (window.outerWidth - window.innerWidth > threshold) || 
+                     (window.outerHeight - window.innerHeight > threshold);
+                     
+    const isPlaying = document.getElementById('viewPlay') && document.getElementById('viewPlay').classList.contains('active');
+    
+    if (isDocked) {
       if (isPlaying) {
-        // Nếu đang chơi game mà mở DevTools -> Đá văng ra ngoài
-        alert('⛔ Phát hiện DevTools! Bạn đã bị đẩy ra khỏi phòng chơi.');
+        // Nếu đang trong Tool mà mở DevTools -> Đá văng ra ngoài
+        alert('⛔ PHÁT HIỆN CAN THIỆP TRÁI PHÉP!\nHệ thống tự động đẩy bạn ra khỏi phòng chơi.');
         window.location.href = '/game';
-        return;
+      } else {
+        // Nếu ở ngoài -> Phủ màn hình đen
+        if (!document.getElementById('__anti_debug_overlay')) {
+          const overlay = document.createElement('div');
+          overlay.id = '__anti_debug_overlay';
+          overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999999;color:#ff0033;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;flex-direction:column;text-align:center;font-family:sans-serif;';
+          overlay.innerHTML = '<div>⛔ TRUY CẬP BỊ CHẶN</div><div style="font-size:16px;color:#fff;margin-top:10px;">Vui lòng đóng DevTools (F12) để tiếp tục!</div>';
+          document.body.appendChild(overlay);
+        }
       }
-
-      if (!document.getElementById('__anti_debug_overlay')) {
-        const overlay = document.createElement('div');
-        overlay.id = '__anti_debug_overlay';
-        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999999;color:#ff0033;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;flex-direction:column;text-align:center;';
-        overlay.innerHTML = '<div>⛔ TRUY CẬP BỊ CHẶN</div><div style="font-size:16px;color:#fff;margin-top:10px;">Vui lòng đóng DevTools để tiếp tục!</div>';
-        document.body.appendChild(overlay);
-        antiDebug();
-      }
+    } else {
+      // Đóng DevTools thì xóa màn hình đen
+      const overlay = document.getElementById('__anti_debug_overlay');
+      if (overlay) overlay.remove();
     }
   }
   setInterval(checkWindowSize, 500);
