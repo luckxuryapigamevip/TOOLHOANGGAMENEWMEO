@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — HOÀNG TOOL</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Roboto,sans-serif;}
+body{background:#0a0f1c;color:#e8eefc;min-height:100vh;padding:30px;}
+h1{color:#3b82f6;margin-bottom:24px;letter-spacing:2px;}
+table{width:100%;max-width:1000px;margin:auto;border-collapse:collapse;background:rgba(15,20,32,.8);border-radius:16px;overflow:hidden;}
+th,td{padding:14px 18px;text-align:left;border-bottom:1px solid rgba(120,180,255,.1);}
+th{background:rgba(59,130,246,.15);color:#8b5cf6;font-weight:800;text-transform:uppercase;font-size:.8rem;letter-spacing:1px;}
+tr:hover td{background:rgba(59,130,246,.05);}
+.role-admin{color:#fbbf24;font-weight:800;}
+.btn-del{background:#ef4444;border:none;color:#fff;padding:6px 14px;border-radius:8px;cursor:pointer;font-weight:700;}
+.btn-del:hover{background:#dc2626;}
+.bar{max-width:1000px;margin:0 auto 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.btn-back{background:#3b82f6;border:none;color:#fff;padding:10px 20px;border-radius:10px;cursor:pointer;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+</style>
+</head>
+<body>
+<div class="bar">
+  <h1><i class="fas fa-shield-halved"></i> QUẢN TRỊ USER</h1>
+  <div>
+    <a href="/game" class="btn-back"><i class="fas fa-arrow-left"></i> Về Game</a>
+  </div>
+</div>
+<table>
+  <thead><tr><th>ID</th><th>Tên</th><th>Email</th><th>Vai trò</th><th>Ngày tạo</th><th>Hành động</th></tr></thead>
+  <tbody id="tbody"></tbody>
+</table>
+<script>
+(async () => {
+  const r = await fetch('/api/admin/users');
+  const d = await r.json();
+  if (!d.ok) { alert('Không có quyền'); window.location.href='/'; return; }
+  const tb = document.getElementById('tbody');
+  d.users.forEach(u => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${u.id}</td>
+      <td>${u.name}</td>
+      <td>${u.email}</td>
+      <td class="${u.role==='admin'?'role-admin':''}">${u.role}</td>
+      <td>${new Date(u.created_at).toLocaleString('vi-VN')}</td>
+      <td><button class="btn-del" onclick="delUser(${u.id})">Xóa</button></td>
+    `;
+    tb.appendChild(tr);
+  });
+})();
+async function delUser(id){
+  if (!confirm('Xóa user này?')) return;
+  const r = await fetch('/api/admin/users/' + id, { method:'DELETE' });
+  const d = await r.json();
+  alert(d.msg);
+  if (d.ok) location.reload();
+}
+</script>
+</body>
+</html>
