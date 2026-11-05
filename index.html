@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOÀNG TOOL — Đăng nhập</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Roboto,sans-serif; }
+
+:root{
+  --bg1:#05070d; --bg2:#0d1220;
+  --card:rgba(15,20,32,.82);
+  --border:rgba(120,180,255,.15);
+  --text:#e8eefc; --muted:#8b98b5;
+  --in-bg:rgba(255,255,255,.04);
+  --in-bd:rgba(120,180,255,.18);
+  --acc:#3b82f6; --acc2:#8b5cf6;
+  --ok:#22c55e; --err:#ef4444;
+  --glow:0 0 30px rgba(59,130,246,.35);
+}
+body.light{
+  --bg1:#e6ecf7; --bg2:#cdd8ec;
+  --card:rgba(255,255,255,.85);
+  --border:rgba(30,60,120,.12);
+  --text:#0b1526; --muted:#4a5878;
+  --in-bg:rgba(0,0,0,.03);
+  --in-bd:rgba(30,60,120,.15);
+  --acc:#2563eb; --acc2:#7c3aed;
+  --glow:0 0 30px rgba(37,99,235,.25);
+}
+
+html,body{height:100%;overflow:hidden;}
+body{background:linear-gradient(140deg,var(--bg1),var(--bg2));color:var(--text);position:relative;}
+
+#gridCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+body.light #gridCanvas{opacity:.85;}
+
+.theme-toggle{
+  position:fixed;top:22px;right:22px;z-index:50;
+  width:54px;height:54px;border-radius:50%;
+  background:var(--card);backdrop-filter:blur(14px);
+  border:1px solid var(--border);color:var(--text);
+  font-size:1.4rem;cursor:pointer;display:grid;place-items:center;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);transition:.3s;
+}
+.theme-toggle:hover{transform:rotate(20deg) scale(1.07);box-shadow:var(--glow);}
+.theme-toggle .fa-sun{display:none;}
+body.light .theme-toggle .fa-sun{display:block;}
+body.light .theme-toggle .fa-moon{display:none;}
+
+.wrap{position:relative;z-index:2;height:100%;display:grid;place-items:center;padding:20px;}
+
+.brand{text-align:center;margin-bottom:18px;}
+.brand h1{
+  font-size:2.4rem;font-weight:900;letter-spacing:4px;
+  background:linear-gradient(90deg,#3b82f6,#8b5cf6,#ec4899);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 0 18px rgba(139,92,246,.5));
+}
+.brand .admin{
+  margin-top:8px;display:inline-flex;gap:8px;align-items:center;
+  font-size:.85rem;color:var(--muted);
+  background:var(--in-bg);border:1px solid var(--border);
+  padding:6px 16px;border-radius:40px;backdrop-filter:blur(8px);
+}
+.brand .admin i{color:#fbbf24;}
+.brand .admin b{color:#fbbf24;}
+
+.card{
+  width:100%;max-width:440px;
+  background:var(--card);backdrop-filter:blur(22px) saturate(150%);
+  -webkit-backdrop-filter:blur(22px);
+  border:1px solid var(--border);border-radius:28px;padding:30px 28px;
+  box-shadow:0 30px 60px -20px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.05);
+  position:relative;max-height:88vh;overflow-y:auto;
+}
+.card::-webkit-scrollbar{width:6px;}
+.card::-webkit-scrollbar-thumb{background:var(--in-bd);border-radius:10px;}
+
+.tabs{
+  display:flex;gap:6px;padding:6px;
+  background:var(--in-bg);border:1px solid var(--in-bd);
+  border-radius:60px;margin-bottom:24px;
+}
+.tab{
+  flex:1;border:none;background:transparent;padding:11px 6px;
+  border-radius:60px;font-weight:600;font-size:.92rem;
+  color:var(--muted);cursor:pointer;transition:.25s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.tab.active{
+  background:linear-gradient(135deg,var(--acc),var(--acc2));
+  color:#fff;box-shadow:0 8px 20px -6px var(--acc);
+}
+.tab:not(.active):hover{color:var(--text);}
+
+.form{display:none;flex-direction:column;gap:14px;}
+.form.active{display:flex;}
+
+.field{
+  position:relative;display:flex;align-items:center;
+  background:var(--in-bg);border:1px solid var(--in-bd);
+  border-radius:16px;padding:0 16px;transition:.2s;
+}
+.field:focus-within{border-color:var(--acc);box-shadow:0 0 0 3px rgba(59,130,246,.2);}
+.field > i{color:var(--muted);width:20px;font-size:1rem;transition:.2s;}
+.field:focus-within > i{color:var(--acc);}
+.field input{
+  flex:1;background:transparent;border:none;outline:none;
+  padding:15px 10px;font-size:.98rem;color:var(--text);font-family:inherit;
+}
+.field input::placeholder{color:var(--muted);opacity:.65;}
+
+.eye{
+  background:none;border:none;color:var(--muted);
+  padding:8px;cursor:pointer;border-radius:50%;
+  display:grid;place-items:center;font-size:.95rem;
+}
+.eye:hover{color:var(--text);background:rgba(255,255,255,.06);}
+
+.btn{
+  border:none;border-radius:16px;padding:15px;
+  font-size:1rem;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  transition:.22s;font-family:inherit;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--acc),var(--acc2));
+  color:#fff;box-shadow:0 12px 28px -10px var(--acc);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 18px 34px -10px var(--acc);}
+.btn-primary:active{transform:scale(.98);}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none!important;}
+
+.btn-ghost{
+  background:transparent;border:1px solid var(--in-bd);
+  color:var(--muted);font-weight:600;padding:12px;font-size:.9rem;
+}
+.btn-ghost:hover{color:var(--text);border-color:var(--acc);}
+
+.aux{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:.85rem;margin-top:-2px;
+}
+.aux a{color:var(--acc);text-decoration:none;cursor:pointer;font-weight:600;}
+.aux a:hover{text-decoration:underline;}
+
+.otp-box{display:flex;gap:8px;justify-content:center;margin:6px 0;}
+.otp-box input{
+  width:46px;height:54px;text-align:center;
+  font-size:1.4rem;font-weight:800;
+  background:var(--in-bg);border:1px solid var(--in-bd);
+  border-radius:12px;color:var(--text);outline:none;transition:.2s;
+}
+.otp-box input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(59,130,246,.2);}
+.otp-box input.filled{border-color:var(--acc);background:rgba(59,130,246,.1);}
+
+.msg{font-size:.85rem;padding:10px 14px;border-radius:12px;display:none;align-items:center;gap:8px;}
+.msg.show{display:flex;}
+.msg.err{background:rgba(239,68,68,.12);color:#fca5a5;border:1px solid rgba(239,68,68,.3);}
+.msg.ok{background:rgba(34,197,94,.12);color:#86efac;border:1px solid rgba(34,197,94,.3);}
+body.light .msg.err{color:#b91c1c;}
+body.light .msg.ok{color:#15803d;}
+
+.toast{
+  position:fixed;bottom:30px;left:50%;
+  transform:translateX(-50%) translateY(100px);
+  background:var(--card);backdrop-filter:blur(18px);
+  border:1px solid var(--border);color:var(--text);
+  padding:13px 26px;border-radius:60px;font-weight:500;font-size:.92rem;
+  display:flex;align-items:center;gap:10px;
+  box-shadow:0 20px 50px -10px rgba(0,0,0,.6);
+  opacity:0;transition:.4s cubic-bezier(.34,1.56,.64,1);
+  z-index:999;pointer-events:none;max-width:90vw;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast i{font-size:1.15rem;}
+
+.spin{animation:sp 1s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+
+@media(max-width:480px){
+  .brand h1{font-size:1.9rem;letter-spacing:2px;}
+  .card{padding:24px 20px;border-radius:22px;}
+  .otp-box input{width:40px;height:48px;font-size:1.15rem;}
+  .theme-toggle{width:46px;height:46px;font-size:1.2rem;top:14px;right:14px;}
+}
+</style>
+</head>
+<body>
+
+<canvas id="gridCanvas"></canvas>
+
+<button class="theme-toggle" id="themeBtn" aria-label="Đổi giao diện">
+  <i class="fas fa-moon"></i>
+  <i class="fas fa-sun"></i>
+</button>
+
+<div class="wrap">
+<div>
+  <div class="brand">
+    <h1>HOÀNG TOOL</h1>
+    <div class="admin"><i class="fas fa-crown"></i> Admin: <b>@tranhoang2286</b></div>
+  </div>
+
+  <div class="card">
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-tab="login"><i class="fas fa-sign-in-alt"></i> Đăng nhập</button>
+      <button class="tab" data-tab="register"><i class="fas fa-user-plus"></i> Đăng ký</button>
+    </div>
+
+    <form class="form active" id="formLogin" autocomplete="off" novalidate>
+      <div class="field">
+        <i class="fas fa-envelope"></i>
+        <input type="email" id="loginEmail" placeholder="Email" required>
+      </div>
+      <div class="field">
+        <i class="fas fa-lock"></i>
+        <input type="password" id="loginPass" placeholder="Mật khẩu" required>
+        <button type="button" class="eye" data-target="loginPass"><i class="fas fa-eye"></i></button>
+      </div>
+      <div class="aux">
+        <span></span>
+        <a id="goForgot">Quên mật khẩu?</a>
+      </div>
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-arrow-right-to-bracket"></i> Đăng nhập
+      </button>
+    </form>
+
+    <form class="form" id="formRegister" autocomplete="off" novalidate>
+      <div class="field">
+        <i class="fas fa-user"></i>
+        <input type="text" id="regName" placeholder="Họ và tên" required>
+      </div>
+      <div class="field">
+        <i class="fas fa-envelope"></i>
+        <input type="email" id="regEmail" placeholder="Email" required>
+      </div>
+      <div class="field">
+        <i class="fas fa-lock"></i>
+        <input type="password" id="regPass" placeholder="Mật khẩu (≥ 6 ký tự)" required>
+        <button type="button" class="eye" data-target="regPass"><i class="fas fa-eye"></i></button>
+      </div>
+      <div class="field">
+        <i class="fas fa-check-circle"></i>
+        <input type="password" id="regPass2" placeholder="Xác nhận mật khẩu" required>
+        <button type="button" class="eye" data-target="regPass2"><i class="fas fa-eye"></i></button>
+      </div>
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-user-plus"></i> Tạo tài khoản
+      </button>
+    </form>
+
+    <form class="form" id="formForgot1" autocomplete="off" novalidate>
+      <p style="font-size:.9rem;color:var(--muted);margin-bottom:6px;text-align:center;">
+        Nhập email đã đăng ký. Chúng tôi sẽ gửi mã <b style="color:var(--acc)">OTP</b> tới hộp thư của bạn.
+      </p>
+      <div class="field">
+        <i class="fas fa-envelope"></i>
+        <input type="email" id="forgotEmail" placeholder="Email của bạn" required>
+      </div>
+      <div class="msg err" id="forgotMsg1"></div>
+      <button type="submit" class="btn btn-primary" id="btnSendOtp">
+        <i class="fas fa-paper-plane"></i> Gửi mã OTP
+      </button>
+      <button type="button" class="btn btn-ghost" data-back="login">
+        <i class="fas fa-arrow-left"></i> Quay lại đăng nhập
+      </button>
+    </form>
+
+    <form class="form" id="formForgot2" autocomplete="off" novalidate>
+      <p style="font-size:.9rem;color:var(--muted);margin-bottom:6px;text-align:center;">
+        Mã OTP đã được gửi tới <b id="otpEmailDisplay" style="color:var(--acc)"></b>.<br>
+        Nhập 6 chữ số bên dưới.
+      </p>
+      <div class="otp-box" id="otpBox">
+        <input maxlength="1" inputmode="numeric" data-i="0">
+        <input maxlength="1" inputmode="numeric" data-i="1">
+        <input maxlength="1" inputmode="numeric" data-i="2">
+        <input maxlength="1" inputmode="numeric" data-i="3">
+        <input maxlength="1" inputmode="numeric" data-i="4">
+        <input maxlength="1" inputmode="numeric" data-i="5">
+      </div>
+      <div class="msg err" id="forgotMsg2"></div>
+      <button type="submit" class="btn btn-primary" id="btnVerifyOtp">
+        <i class="fas fa-shield-halved"></i> Xác thực OTP
+      </button>
+      <button type="button" class="btn btn-ghost" id="btnResend" disabled>
+        <i class="fas fa-rotate-right"></i> Gửi lại (<span id="countdown">60</span>s)
+      </button>
+      <button type="button" class="btn btn-ghost" data-back="forgot1">
+        <i class="fas fa-arrow-left"></i> Đổi email khác
+      </button>
+    </form>
+
+    <form class="form" id="formForgot3" autocomplete="off" novalidate>
+      <p style="font-size:.9rem;color:var(--muted);margin-bottom:6px;text-align:center;">
+        Đặt mật khẩu mới cho <b id="resetEmailDisplay" style="color:var(--acc)"></b>
+      </p>
+      <div class="field">
+        <i class="fas fa-lock"></i>
+        <input type="password" id="newPass" placeholder="Mật khẩu mới (≥ 6 ký tự)" required>
+        <button type="button" class="eye" data-target="newPass"><i class="fas fa-eye"></i></button>
+      </div>
+      <div class="field">
+        <i class="fas fa-check-circle"></i>
+        <input type="password" id="newPass2" placeholder="Xác nhận mật khẩu mới" required>
+        <button type="button" class="eye" data-target="newPass2"><i class="fas fa-eye"></i></button>
+      </div>
+      <div class="msg err" id="forgotMsg3"></div>
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-key"></i> Đổi mật khẩu
+      </button>
+    </form>
+
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"><i class="fas fa-circle-check"></i><span id="toastText"></span></div>
+
+<script>
+/* ===== THEME ===== */
+if (localStorage.getItem('ht_theme') === 'light') document.body.classList.add('light');
+document.getElementById('themeBtn').addEventListener('click', () => {
+  document.body.classList.toggle('light');
+  localStorage.setItem('ht_theme', document.body.classList.contains('light') ? 'light' : 'dark');
+});
+
+/* ===== BẢO MẬT NHẸ (không block overlay) ===== */
+(function(){
+  document.addEventListener('contextmenu', e => {
+    const t = (e.target.tagName || '').toUpperCase();
+    if (t === 'INPUT' || t === 'TEXTAREA') return;
+    e.preventDefault();
+  });
+  document.addEventListener('keydown', e => {
+    const k = (e.key || '').toLowerCase();
+    if (k === 'f12') { e.preventDefault(); return; }
+    if (e.ctrlKey && e.shiftKey && ['i','j','c'].includes(k)) { e.preventDefault(); return; }
+    if (e.ctrlKey && k === 'u') { e.preventDefault(); return; }
+  }, { capture: true });
+})();
+
+/* ===== HELPERS ===== */
+const $ = id => document.getElementById(id);
+function toast(msg, type='ok'){
+  const t = $('toast');
+  $('toastText').textContent = msg;
+  t.querySelector('i').className = type==='ok' ? 'fas fa-circle-check' : 'fas fa-circle-exclamation';
+  t.querySelector('i').style.color = type==='ok' ? '#22c55e' : '#ef4444';
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(()=>t.classList.remove('show'), 3200);
+}
+function showMsg(el, txt, type='err'){ el.textContent = txt; el.className = 'msg show ' + type; }
+function hideMsg(el){ el.className = 'msg'; }
+const isEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+/* ===== TABS ===== */
+const allForms = ['formLogin','formRegister','formForgot1','formForgot2','formForgot3'];
+function showForm(id){ allForms.forEach(f=>$(f).classList.remove('active')); $(id).classList.add('active'); }
+$('tabs').addEventListener('click', e=>{
+  const b = e.target.closest('.tab'); if(!b) return;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  b.classList.add('active');
+  showForm(b.dataset.tab === 'login' ? 'formLogin' : 'formRegister');
+});
+document.querySelectorAll('[data-back]').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    if (b.dataset.back === 'login') showForm('formLogin');
+    if (b.dataset.back === 'forgot1') showForm('formForgot1');
+  });
+});
+document.querySelectorAll('.eye').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    const inp = $(b.dataset.target);
+    const ic = b.querySelector('i');
+    if (inp.type === 'password'){ inp.type='text'; ic.className='fas fa-eye-slash'; }
+    else { inp.type='password'; ic.className='fas fa-eye'; }
+  });
+});
+
+/* ===== ĐĂNG NHẬP ===== */
+$('formLogin').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const email = $('loginEmail').value.trim();
+  const pass = $('loginPass').value;
+  if (!isEmail(email)) return toast('Email không hợp lệ','err');
+  if (!pass) return toast('Nhập mật khẩu','err');
+
+  try {
+    const r = await fetch('/api/login', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, password: pass })
+    });
+    const d = await r.json();
+    if (!d.ok) return toast(d.msg, 'err');
+    toast(d.msg);
+    setTimeout(()=>{ window.location.href = '/game'; }, 600);
+  } catch(err){
+    toast('Lỗi kết nối server', 'err');
+  }
+});
+
+/* ===== ĐĂNG KÝ ===== */
+$('formRegister').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const name = $('regName').value.trim();
+  const email = $('regEmail').value.trim();
+  const p1 = $('regPass').value;
+  const p2 = $('regPass2').value;
+  if (!name) return toast('Nhập họ tên','err');
+  if (!isEmail(email)) return toast('Email không hợp lệ','err');
+  if (p1.length < 6) return toast('Mật khẩu ≥ 6 ký tự','err');
+  if (p1 !== p2) return toast('Mật khẩu không khớp','err');
+
+  try {
+    const r = await fetch('/api/register', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ name, email, password: p1 })
+    });
+    const d = await r.json();
+    if (!d.ok) return toast(d.msg, 'err');
+    toast('Đăng ký thành công! Hãy đăng nhập 🎉');
+    $('formRegister').reset();
+    document.querySelector('.tab[data-tab="login"]').click();
+  } catch(err){
+    toast('Lỗi kết nối server', 'err');
+  }
+});
+
+/* ===== QUÊN MẬT KHẨU ===== */
+$('goForgot').addEventListener('click', ()=>{
+  hideMsg($('forgotMsg1'));
+  $('formForgot1').reset();
+  showForm('formForgot1');
+});
+
+$('formForgot1').addEventListener('submit', async e=>{
+  e.preventDefault();
+  hideMsg($('forgotMsg1'));
+  const email = $('forgotEmail').value.trim();
+  if (!isEmail(email)) return showMsg($('forgotMsg1'),'Email không hợp lệ','err');
+
+  const btn = $('btnSendOtp');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner spin"></i> Đang gửi...';
+
+  try {
+    const r = await fetch('/api/forgot/send-otp', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email })
+    });
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.msg);
+
+    $('otpEmailDisplay').textContent = email;
+    $('resetEmailDisplay').textContent = email;
+    $('formForgot2').reset();
+    document.querySelectorAll('#otpBox input').forEach(i=>{ i.value=''; i.classList.remove('filled'); });
+    $('otpBox').children[0].focus();
+    hideMsg($('forgotMsg2'));
+    showForm('formForgot2');
+    toast(d.devOtp ? `[DEV] OTP: ${d.devOtp}` : 'Đã gửi OTP 📧');
+    startCountdown();
+  } catch(err){
+    showMsg($('forgotMsg1'), err.message || 'Lỗi gửi mail', 'err');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Gửi mã OTP';
+  }
+});
+
+let countdownTimer;
+function startCountdown(){
+  clearInterval(countdownTimer);
+  let t = 60;
+  const cd = $('countdown'), btn = $('btnResend');
+  btn.disabled = true;
+  cd.textContent = t;
+  countdownTimer = setInterval(()=>{
+    t--; cd.textContent = t;
+    if (t<=0){ clearInterval(countdownTimer); btn.disabled = false; }
+  },1000);
+}
+$('btnResend').addEventListener('click', ()=>{
+  const email = $('otpEmailDisplay').textContent;
+  $('forgotEmail').value = email;
+  $('formForgot1').dispatchEvent(new Event('submit', { cancelable: true }));
+});
+
+const otpInputs = document.querySelectorAll('#otpBox input');
+otpInputs.forEach((inp, idx)=>{
+  inp.addEventListener('input', e=>{
+    e.target.value = e.target.value.replace(/\D/g,'').slice(0,1);
+    e.target.classList.toggle('filled', !!e.target.value);
+    if (e.target.value && idx < otpInputs.length-1) otpInputs[idx+1].focus();
+  });
+  inp.addEventListener('keydown', e=>{
+    if (e.key === 'Backspace' && !e.target.value && idx > 0) otpInputs[idx-1].focus();
+  });
+  inp.addEventListener('paste', e=>{
+    e.preventDefault();
+    const digits = (e.clipboardData.getData('text')||'').replace(/\D/g,'').slice(0,6).split('');
+    digits.forEach((d,i)=>{ if (otpInputs[i]){ otpInputs[i].value=d; otpInputs[i].classList.add('filled'); }});
+    if (digits.length) otpInputs[Math.min(digits.length,5)].focus();
+  });
+});
+
+$('formForgot2').addEventListener('submit', async e=>{
+  e.preventDefault();
+  hideMsg($('forgotMsg2'));
+  const email = $('otpEmailDisplay').textContent;
+  const code = Array.from(otpInputs).map(i=>i.value).join('');
+  if (code.length !== 6) return showMsg($('forgotMsg2'),'Nhập đủ 6 chữ số','err');
+
+  try {
+    const r = await fetch('/api/forgot/verify-otp', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, code })
+    });
+    const d = await r.json();
+    if (!d.ok) return showMsg($('forgotMsg2'), d.msg, 'err');
+
+    toast('Xác thực OTP thành công ✅');
+    $('newPass').value = '';
+    $('newPass2').value = '';
+    hideMsg($('forgotMsg3'));
+    showForm('formForgot3');
+  } catch(err){
+    showMsg($('forgotMsg2'), 'Lỗi kết nối', 'err');
+  }
+});
+
+$('formForgot3').addEventListener('submit', async e=>{
+  e.preventDefault();
+  hideMsg($('forgotMsg3'));
+  const email = $('otpEmailDisplay').textContent;
+  const code = Array.from(otpInputs).map(i=>i.value).join('');
+  const p1 = $('newPass').value;
+  const p2 = $('newPass2').value;
+  if (p1.length < 6) return showMsg($('forgotMsg3'),'Mật khẩu ≥ 6 ký tự','err');
+  if (p1 !== p2) return showMsg($('forgotMsg3'),'Mật khẩu không khớp','err');
+
+  try {
+    const r = await fetch('/api/forgot/reset-password', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, code, newPassword: p1 })
+    });
+    const d = await r.json();
+    if (!d.ok) return showMsg($('forgotMsg3'), d.msg, 'err');
+
+    toast('Đổi mật khẩu thành công! Hãy đăng nhập 🎉');
+    showForm('formLogin');
+    $('loginEmail').value = email;
+    $('loginPass').value = '';
+    $('loginPass').focus();
+  } catch(err){
+    showMsg($('forgotMsg3'), 'Lỗi kết nối', 'err');
+  }
+});
+
+/* ===== MẠNG LƯỚI ĐIỆN NỀN ===== */
+(function(){
+  const cvs = $('gridCanvas');
+  const ctx = cvs.getContext('2d');
+  let nodes = [], mouse = { x: -9999, y: -9999 };
+  const MAX_DIST = 170, MOUSE_RADIUS = 220, NODE_SPEED = 0.28;
+
+  function resize(){
+    cvs.width  = window.innerWidth  * devicePixelRatio;
+    cvs.height = window.innerHeight * devicePixelRatio;
+    cvs.style.width  = window.innerWidth + 'px';
+    cvs.style.height = window.innerHeight + 'px';
+    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+    initNodes();
+  }
+  function initNodes(){
+    const count = Math.min(90 + Math.floor(window.innerWidth/22), 200);
+    nodes = [];
+    for (let i=0;i<count;i++){
+      nodes.push({
+        x: Math.random()*window.innerWidth,
+        y: Math.random()*window.innerHeight,
+        vx: (Math.random()-.5)*NODE_SPEED,
+        vy: (Math.random()-.5)*NODE_SPEED,
+        r: 1 + Math.random()*1.8
+      });
+    }
+  }
+  function isLight(){ return document.body.classList.contains('light'); }
+  function draw(){
+    const light = isLight();
+    ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
+    const g = ctx.createLinearGradient(0,0,window.innerWidth,window.innerHeight);
+    if (light){
+      g.addColorStop(0,'rgba(230,236,247,1)');
+      g.addColorStop(1,'rgba(205,216,236,1)');
+    } else {
+      g.addColorStop(0,'rgba(5,7,13,1)');
+      g.addColorStop(1,'rgba(13,18,32,1)');
+    }
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,window.innerWidth,window.innerHeight);
+
+    const lineBase = light ? 'rgba(37,99,235,' : 'rgba(59,130,246,';
+    const nodeColor = light ? '#2563eb' : '#60a5fa';
+
+    for (let i=0;i<nodes.length;i++){
+      const a = nodes[i];
+      a.x += a.vx; a.y += a.vy;
+      if (a.x < 0 || a.x > window.innerWidth ) a.vx *= -1;
+      if (a.y < 0 || a.y > window.innerHeight) a.vy *= -1;
+      a.x = Math.max(0, Math.min(window.innerWidth, a.x));
+      a.y = Math.max(0, Math.min(window.innerHeight, a.y));
+      const dxm = a.x - mouse.x, dym = a.y - mouse.y;
+      const dm = Math.hypot(dxm, dym);
+      if (dm < MOUSE_RADIUS && dm > 0.01){
+        const force = (1 - dm/MOUSE_RADIUS) * 0.6;
+        a.x += (dxm/dm) * force;
+        a.y += (dym/dm) * force;
+      }
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, a.r, 0, Math.PI*2);
+      ctx.fillStyle = nodeColor;
+      ctx.globalAlpha = light ? 0.55 : 0.75;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      for (let j=i+1;j<nodes.length;j++){
+        const b = nodes[j];
+        const d = Math.hypot(a.x-b.x, a.y-b.y);
+        if (d < MAX_DIST){
+          const alpha = (1 - d/MAX_DIST) * 0.45;
+          ctx.strokeStyle = lineBase + alpha.toFixed(3) + ')';
+          ctx.lineWidth = 0.7;
+          ctx.beginPath();
+          ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+          ctx.stroke();
+        }
+      }
+      if (dm < MOUSE_RADIUS){
+        const alpha = (1 - dm/MOUSE_RADIUS) * 0.75;
+        ctx.strokeStyle = light
+          ? 'rgba(124,58,237,' + alpha.toFixed(3) + ')'
+          : 'rgba(167,139,250,' + alpha.toFixed(3) + ')';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(a.x,a.y); ctx.lineTo(mouse.x,mouse.y);
+        ctx.stroke();
+      }
+    }
+    if (mouse.x > 0){
+      const grd = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, MOUSE_RADIUS);
+      if (light){
+        grd.addColorStop(0,'rgba(124,58,237,.18)');
+        grd.addColorStop(1,'rgba(124,58,237,0)');
+      } else {
+        grd.addColorStop(0,'rgba(167,139,250,.15)');
+        grd.addColorStop(1,'rgba(167,139,250,0)');
+      }
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.arc(mouse.x, mouse.y, MOUSE_RADIUS, 0, Math.PI*2);
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', resize);
+  window.addEventListener('mousemove', e=>{ mouse.x = e.clientX; mouse.y = e.clientY; });
+  window.addEventListener('mouseleave', ()=>{ mouse.x = -9999; mouse.y = -9999; });
+  window.addEventListener('touchmove', e=>{
+    const t = e.touches[0];
+    mouse.x = t.clientX; mouse.y = t.clientY;
+  }, { passive: true });
+  window.addEventListener('touchend', ()=>{ mouse.x = -9999; mouse.y = -9999; });
+  resize();
+  draw();
+})();
+</script>
+</body>
+</html>
