@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 const db = new Database('database.db');
 
 /* ============================================================
-   1. KHỞI TẠO DATABASE & TÀI KHOẢN ADMIN
+   1. KHỞI TẠO DATABASE & TÀI KHOẢN ADMIN (Gắn cứng)
    ============================================================ */
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
@@ -33,7 +33,7 @@ db.exec(`
   );
 `);
 
-// TỰ ĐỘNG TẠO ADMIN (Đã gắn cứng theo yêu cầu)
+// TỰ ĐỘNG TẠO ADMIN
 const adminEmail = 'htrannhat264@gmail.com';
 const adminPass = 'Hoang2010';
 const adminName = 'Hoang Admin';
@@ -43,17 +43,17 @@ if (!exists) {
   const hash = bcrypt.hashSync(adminPass, 10);
   db.prepare(`INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, 'admin')`)
     .run(adminName, adminEmail, hash);
-  console.log('✅ Đã tạo admin:', adminEmail);
+  console.log('✅ Đã tạo tài khoản admin:', adminEmail);
 }
 
 /* ============================================================
-   2. CẤU HÌNH CHUNG
+   2. CẤU HÌNH MIDDLEWARE CHUNG
    ============================================================ */
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(cookieParser());
 app.use(session({
-  secret: 'hoang_tool_sieu_bi_mat_2025', // Fix cứng secret
+  secret: 'hoang_tool_sieu_bi_mat_2025',
   resave: false,
   saveUninitialized: false,
   cookie: { maxAge: 7 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'lax' }
@@ -68,7 +68,7 @@ app.use((req, res, next) => {
 });
 
 /* ============================================================
-   3. MIDDLEWARE GUARDS
+   3. MIDDLEWARE GUARDS (BẢO VỆ TRANG)
    ============================================================ */
 function requireLogin(req, res, next) {
   if (!req.session.user) return res.redirect('/');
@@ -86,7 +86,7 @@ function requireLoginAPI(req, res, next) {
 }
 
 /* ============================================================
-   4. MAILER (Cấu hình SMTP)
+   4. MAILER (CẤU HÌNH GỬI OTP QUA GMAIL)
    ============================================================ */
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
@@ -118,7 +118,7 @@ async function sendOTPEmail(to, otp) {
 }
 
 /* ============================================================
-   5. AUTH API
+   5. API ĐĂNG KÝ / ĐĂNG NHẬP / QUÊN MẬT KHẨU
    ============================================================ */
 app.post('/api/register', async (req, res) => {
   try {
@@ -158,7 +158,7 @@ app.get('/api/me', (req, res) => {
   res.json({ ok: true, user: req.session.user });
 });
 
-/* QUÊN MẬT KHẨU */
+// Quên mật khẩu
 app.post('/api/forgot/send-otp', async (req, res) => {
   const email = (req.body.email || '').toLowerCase().trim();
   const user = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
@@ -195,11 +195,10 @@ app.post('/api/forgot/reset-password', async (req, res) => {
 });
 
 /* ============================================================
-   6. TOOL PROXY & ADMIN API
+   6. API TOOL & ADMIN
    ============================================================ */
-// (Giữ nguyên phần proxy API tool như cũ)
 const TOOL_ENDPOINTS = { md5: { url: 'https://upgraded-potato-leu6.onrender.com/api/tx/md5' }, tx: { url: 'https://upgraded-potato-leu6.onrender.com/api/tx' } };
-const toolCache = {}, rateLimitMap = {};
+const toolCache = {};
 app.get('/api/tool/token', requireLoginAPI, (req, res) => {
   const exp = Date.now() + 2 * 60 * 1000;
   const sig = crypto.createHmac('sha256', 'hoang_hmac_secret').update(`${req.sessionID}|${exp}`).digest('hex');
@@ -220,26 +219,25 @@ app.get('/api/tool/predict', requireLoginAPI, async (req, res) => {
     res.json({ ok: true, data });
   } catch (e) { res.status(502).json({ ok: false }); }
 });
-
 app.get('/api/admin/users', requireAdmin, (req, res) => {
   res.json({ ok: true, users: db.prepare('SELECT id, name, email, role, created_at FROM users').all() });
 });
 
 /* ============================================================
-   7. ROUTE TRANG (Đã sửa lại luồng Giới thiệu -> Kho Game)
+   7. ROUTE TRANG (ĐÚNG LUỒNG: ĐĂNG NHẬP -> GIỚI THIỆU -> GAME)
    ============================================================ */
-// Đăng nhập xong -> Vào thẳng trang Giới Thiệu
+// Trang chủ (Đăng nhập). Nếu đã đăng nhập thì nhảy sang /intro
 app.get('/', (req, res) => {
   if (req.session.user) return res.redirect('/intro');
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Trang Giới thiệu (Bắt buộc đăng nhập)
+// Trang Giới thiệu (Bắt buộc đăng nhập mới xem được)
 app.get('/intro', requireLogin, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index2.html'));
 });
 
-// Kho game (Bắt buộc đăng nhập)
+// Kho Game (Bắt buộc đăng nhập mới xem được)
 app.get('/game', requireLogin, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'game.html'));
 });
@@ -249,7 +247,10 @@ app.get('/admin', requireAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
+// Load file tĩnh (ảnh, css) nhưng không cho truy cập file index gốc
 app.use(express.static(path.join(__dirname, 'public'), { index: false }));
+
+// Bắt lỗi 404
 app.use((req, res) => res.status(404).send('404 Not Found'));
 
 app.listen(PORT, () => {
