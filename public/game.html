@@ -2,61 +2,291 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — HOÀNG TOOL</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HOÀNG TOOL — Kho Game</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Roboto,sans-serif;}
-body{background:#0a0f1c;color:#e8eefc;min-height:100vh;padding:30px;}
-h1{color:#3b82f6;margin-bottom:24px;letter-spacing:2px;}
-table{width:100%;max-width:1000px;margin:auto;border-collapse:collapse;background:rgba(15,20,32,.8);border-radius:16px;overflow:hidden;}
-th,td{padding:14px 18px;text-align:left;border-bottom:1px solid rgba(120,180,255,.1);}
-th{background:rgba(59,130,246,.15);color:#8b5cf6;font-weight:800;text-transform:uppercase;font-size:.8rem;letter-spacing:1px;}
-tr:hover td{background:rgba(59,130,246,.05);}
-.role-admin{color:#fbbf24;font-weight:800;}
-.btn-del{background:#ef4444;border:none;color:#fff;padding:6px 14px;border-radius:8px;cursor:pointer;font-weight:700;}
-.btn-del:hover{background:#dc2626;}
-.bar{max-width:1000px;margin:0 auto 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
-.btn-back{background:#3b82f6;border:none;color:#fff;padding:10px 20px;border-radius:10px;cursor:pointer;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+:root{ --bg1:#020208; --bg2:#0a0416; --bg3:#150522; --neon-red:#ff0033; --neon-gold:#ffcc00; --neon-pink:#ff2d95; --neon-cyan:#00e5ff; --text:#ffffff; --muted:#8a8aa0; --card:rgba(15,8,25,.7); --border:rgba(255,0,51,.25); }
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;width:100%;background:var(--bg1);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;overflow-x:hidden;-webkit-tap-highlight-color:transparent;}
+.view{display:none;} .view.active{display:block;}
+#viewKho{min-height:100vh;position:relative;overflow-x:hidden;}
+#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.aurora span{position:absolute;border-radius:50%;filter:blur(100px);opacity:.55;animation:float 20s ease-in-out infinite;}
+.aurora span:nth-child(1){width:520px;height:520px;background:radial-gradient(circle,#ff0033,transparent 70%);top:-140px;left:-120px;}
+.aurora span:nth-child(2){width:480px;height:480px;background:radial-gradient(circle,#ff2d95,transparent 70%);bottom:-160px;right:-100px;animation-delay:-6s;}
+.aurora span:nth-child(3){width:440px;height:440px;background:radial-gradient(circle,#7c3aed,transparent 70%);top:45%;left:50%;animation-delay:-12s;}
+.aurora span:nth-child(4){width:380px;height:380px;background:radial-gradient(circle,#00e5ff,transparent 70%);bottom:20%;left:10%;animation-delay:-9s;}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1);} 33%{transform:translate(80px,-60px) scale(1.15);} 66%{transform:translate(-60px,70px) scale(.9);}}
+.grid-overlay{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,0,51,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,0,51,.06) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%);-webkit-mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%);}
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(5,2,10,.75);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.brand{display:flex;align-items:center;gap:12px;font-size:1.3rem;font-weight:900;letter-spacing:2px;}
+.brand .logo-mark{width:42px;height:42px;border-radius:12px;overflow:hidden;border:2px solid var(--neon-red);box-shadow:0 0 18px rgba(255,0,51,.7);flex-shrink:0;}
+.brand .logo-mark img{width:100%;height:100%;object-fit:cover;display:block;}
+.brand .name{background:linear-gradient(90deg,#ff0033,#ff2d95,#ffcc00);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 12px rgba(255,45,149,.5));}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.admin-chip{display:flex;align-items:center;gap:8px;background:rgba(255,204,0,.08);border:1px solid rgba(255,204,0,.35);padding:7px 14px;border-radius:40px;font-size:.82rem;font-weight:700;color:var(--neon-gold);}
+.btn-exit-top{background:rgba(255,0,51,.15);border:1px solid var(--neon-red);color:#ff99aa;padding:9px 16px;border-radius:10px;font-size:.85rem;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:8px;transition:.2s;text-decoration:none;}
+.btn-exit-top:hover{background:rgba(255,0,51,.3);color:#fff;}
+main{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:50px 24px 120px;}
+.hero-kho{text-align:center;margin-bottom:60px;animation:dropIn .8s cubic-bezier(.34,1.56,.64,1);}
+@keyframes dropIn{from{opacity:0;transform:translateY(-30px);}to{opacity:1;transform:translateY(0);}}
+.hero-kho .tag{display:inline-flex;align-items:center;gap:8px;background:rgba(255,0,51,.12);border:1px solid rgba(255,0,51,.4);color:#ff6680;padding:7px 18px;border-radius:40px;font-size:.78rem;font-weight:800;letter-spacing:2px;margin-bottom:20px;}
+.hero-kho .tag .dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 10px #22c55e;animation:pulse 1.6s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.hero-kho h1{font-size:3rem;font-weight:900;letter-spacing:-1px;line-height:1.1;margin-bottom:16px;}
+.hero-kho h1 .grad{background:linear-gradient(90deg,#ff0033,#ff2d95,#ffcc00);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 20px rgba(255,0,51,.5));}
+.hero-kho p{color:var(--muted);font-size:1.02rem;max-width:520px;margin:0 auto;line-height:1.7;}
+.game-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px;margin-top:20px;}
+.game-card{position:relative;background:var(--card);border:1px solid var(--border);border-radius:26px;padding:32px 26px;backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px);cursor:pointer;transition:.4s cubic-bezier(.34,1.56,.64,1);overflow:hidden;animation:cardIn .7s backwards;}
+.game-card:nth-child(1){animation-delay:.1s;} .game-card:nth-child(2){animation-delay:.25s;}
+@keyframes cardIn{from{opacity:0;transform:translateY(30px) scale(.95);}to{opacity:1;transform:translateY(0) scale(1);}}
+.game-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--neon-red),transparent);opacity:0;transition:.4s;}
+.game-card:hover{transform:translateY(-10px) scale(1.02);border-color:rgba(255,0,51,.6);box-shadow:0 25px 60px -15px rgba(255,0,51,.6),0 0 40px rgba(255,0,51,.3);}
+.game-card:hover::before{opacity:1;}
+.game-card::after{content:'';position:absolute;top:-50%;left:-100%;width:60%;height:200%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);transform:rotate(25deg);transition:.7s;pointer-events:none;}
+.game-card:hover::after{left:150%;}
+.game-logo{width:100%;aspect-ratio:1/1;max-width:200px;margin:0 auto 22px;border-radius:24px;overflow:hidden;position:relative;border:2px solid rgba(255,0,51,.4);box-shadow:0 15px 40px -10px rgba(0,0,0,.8),inset 0 0 20px rgba(255,0,51,.2);transition:.4s;}
+.game-card:hover .game-logo{transform:scale(1.05);border-color:var(--neon-red);box-shadow:0 20px 50px -10px rgba(255,0,51,.7),0 0 30px rgba(255,0,51,.5);}
+.game-logo img{width:100%;height:100%;object-fit:cover;display:block;}
+.game-info{text-align:center;}
+.game-name{font-size:1.35rem;font-weight:900;letter-spacing:.5px;margin-bottom:8px;color:#fff;text-shadow:0 0 20px rgba(255,0,51,.5);}
+.game-tagline{font-size:.85rem;color:var(--muted);line-height:1.6;margin-bottom:18px;}
+.game-status{display:inline-flex;align-items:center;gap:7px;font-size:.75rem;font-weight:800;letter-spacing:1px;padding:5px 14px;border-radius:40px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.4);color:#4ade80;margin-bottom:18px;}
+.game-status i{font-size:.6rem;animation:pulse 1.5s infinite;}
+.btn-play{width:100%;background:linear-gradient(135deg,var(--neon-red),var(--neon-pink));border:none;border-radius:14px;padding:14px;font-size:1rem;font-weight:900;letter-spacing:1px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 12px 28px -8px var(--neon-red);transition:.25s;font-family:inherit;}
+.btn-play:hover{transform:translateY(-2px);box-shadow:0 18px 36px -8px var(--neon-red),0 0 25px rgba(255,0,51,.6);}
+#viewPlay{position:fixed;inset:0;z-index:1;background:#000;}
+#viewPlay.active{display:block;}
+#gameContainer{position:absolute;inset:0;z-index:1;background:#000;}
+.iframe-container{width:100%;height:100%;border:none;display:block;}
+.menu-container-3gach{position:absolute;top:15px;left:15px;z-index:10005;display:flex;flex-direction:column;gap:10px;}
+.btn-3gach-toggle{background:rgba(10,2,4,.95);border:2px solid var(--neon-red);color:var(--neon-red);width:42px;height:42px;font-size:18px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.btn-3gach-toggle:active{transform:scale(.92);}
+.dropdown-menu-3gach{display:none;position:absolute;top:50px;left:0;background:rgba(15,2,6,.98);border:1px solid var(--neon-red);border-radius:10px;width:230px;padding:8px;flex-direction:column;gap:6px;z-index:10006;backdrop-filter:blur(8px);}
+.dropdown-menu-3gach.show{display:flex;}
+.menu-3gach-item{background:rgba(255,255,255,.08);border:1px solid rgba(255,0,51,.3);color:#fff;padding:10px 12px;font-size:13px;font-weight:800;border-radius:6px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;transition:all .15s;}
+.menu-3gach-item:active{background:rgba(255,0,51,.25);}
+.menu-3gach-item.exit-btn{background:rgba(255,0,51,.2);border-color:var(--neon-red);color:#ff99aa;}
+.robot-wrapper-node{position:absolute;z-index:10000;bottom:80px;right:20px;will-change:transform;touch-action:none;transform-origin:center center;transition:transform .25s ease;}
+.robot-projection-container{width:340px;max-width:90vw;position:relative;cursor:grab;display:flex;flex-direction:column;align-items:center;user-select:none;}
+.robot-projection-container:active{cursor:grabbing;}
+.robot-gif{width:330px;max-width:100%;height:auto;aspect-ratio:1/1;object-fit:contain;pointer-events:none;filter:drop-shadow(0 0 20px rgba(255,0,51,.4));}
+.bot-info-panel{position:absolute;top:54%;left:48%;transform:translateY(-50%);width:140px;display:flex;flex-direction:column;gap:8px;pointer-events:none;z-index:10;}
+.bot-overlay-box{background:transparent;border:none;padding:0;text-align:left;white-space:nowrap;font-size:14px;font-weight:800;color:var(--neon-gold);text-shadow:0 1px 4px #000,0 0 8px rgba(255,204,0,.8);letter-spacing:.5px;transition:opacity .3s ease;}
+.bot-pred{font-size:16px;}
+.bot-overlay-box.loading-dots{animation:pulse-dots .8s infinite alternate;opacity:.5;}
+@keyframes pulse-dots{0%{opacity:.3;}100%{opacity:1;}}
+.game-title-badge{position:absolute;top:15px;left:70px;z-index:10004;background:rgba(10,2,4,.95);border:2px solid var(--neon-red);border-radius:10px;padding:8px 16px;font-size:13px;font-weight:900;letter-spacing:1px;color:#fff;display:flex;align-items:center;gap:8px;box-shadow:0 0 20px rgba(255,0,51,.4);}
+.game-title-badge i{color:var(--neon-gold);}
+#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);background:rgba(255,0,51,.95);color:#fff;padding:12px 22px;border-radius:10px;font-size:.88rem;font-weight:700;z-index:200000;opacity:0;transition:all .35s;pointer-events:none;max-width:90vw;text-align:center;box-shadow:0 8px 25px rgba(0,0,0,.6);}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+@media(max-width:600px){ .topbar{padding:12px 16px;} .brand{font-size:1.05rem;letter-spacing:1px;gap:8px;} .brand .logo-mark{width:34px;height:34px;border-radius:10px;} .admin-chip{font-size:.7rem;padding:5px 10px;} .btn-exit-top span{display:none;} .btn-exit-top{padding:9px 11px;} main{padding:30px 16px 80px;} .hero-kho h1{font-size:2rem;} .hero-kho p{font-size:.92rem;} .game-grid{grid-template-columns:1fr;gap:20px;} .game-card{padding:26px 20px;} .game-logo{max-width:160px;} .game-name{font-size:1.15rem;} .robot-projection-container{width:280px;} .robot-gif{width:270px;} .bot-info-panel{width:120px;} .bot-overlay-box{font-size:12px;} .bot-pred{font-size:14px;} .game-title-badge{font-size:11px;padding:6px 12px;left:62px;} }
 </style>
 </head>
 <body>
-<div class="bar">
-  <h1><i class="fas fa-shield-halved"></i> QUẢN TRỊ USER</h1>
-  <div>
-    <a href="/game" class="btn-back"><i class="fas fa-arrow-left"></i> Về Kho Game</a>
+
+<div id="viewKho" class="view active">
+  <canvas id="bgCanvas"></canvas>
+  <div class="aurora"><span></span><span></span><span></span><span></span></div>
+  <div class="grid-overlay"></div>
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo-mark"><img src="https://i.postimg.cc/C16fC9My/IMG-0544.jpg" alt="logo"></div>
+      <div class="name">HOÀNG TOOL</div>
+    </div>
+    <div class="topbar-right">
+      <div class="admin-chip"><i class="fas fa-crown"></i><span>@tranhoang2286</span></div>
+      
+      <!-- NÚT QUẢN TRỊ BÍ MẬT -->
+      <a href="/hoang-tool-control-2286?key=123456" class="btn-exit-top" style="background:rgba(59,130,246,.15);border-color:#3b82f6;color:#93c5fd;">
+        <i class="fas fa-user-shield"></i><span>Quản trị</span>
+      </a>
+
+      <button class="btn-exit-top" onclick="exitApp()">
+        <i class="fas fa-right-from-bracket"></i><span>Thoát</span>
+      </button>
+    </div>
+  </div>
+
+  <main>
+    <div class="hero-kho">
+      <div class="tag"><span class="dot"></span> KHO GAME HOÀNG TOOL</div>
+      <h1>Chọn <span class="grad">game</span> để bắt đầu</h1>
+      <p>Nhấn vào game bạn muốn — game sẽ mở full màn hình kèm robot AI dự đoán hiển thị trên game.</p>
+    </div>
+
+    <div class="game-grid">
+      <div class="game-card" onclick="playGame('md5')">
+        <div class="game-logo"><img src="https://i.postimg.cc/C16fC9My/IMG-0544.jpg" alt="LC79 MD"></div>
+        <div class="game-info">
+          <div class="game-name">LC79 MD</div>
+          <div class="game-tagline">Tool MD5 — Phân tích mã băm & dự đoán phiên</div>
+          <div class="game-status"><i class="fas fa-circle"></i> ONLINE</div>
+          <button class="btn-play" onclick="event.stopPropagation();playGame('md5')"><i class="fas fa-play"></i> BẮT ĐẦU</button>
+        </div>
+      </div>
+
+      <div class="game-card" onclick="playGame('tx')">
+        <div class="game-logo"><img src="https://i.postimg.cc/C16fC9My/IMG-0544.jpg" alt="LC79 Tài Xỉu"></div>
+        <div class="game-info">
+          <div class="game-name">LC79 TÀI XỈU</div>
+          <div class="game-tagline">Tool Tài Xỉu — AI dự đoán Tài / Xỉu chuẩn xác</div>
+          <div class="game-status"><i class="fas fa-circle"></i> ONLINE</div>
+          <button class="btn-play" onclick="event.stopPropagation();playGame('tx')"><i class="fas fa-play"></i> BẮT ĐẦU</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="viewPlay" class="view">
+  <div id="gameContainer">
+    <iframe id="mainIframe" class="iframe-container" src="about:blank" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+
+    <div class="robot-wrapper-node" id="robotMasterNode">
+      <div class="robot-projection-container" id="draggableRobot">
+        <img src="https://i.ibb.co/1t4tJbBP/hoangtool-robot-transparent.png" class="robot-gif" alt="Robot V12" onerror="this.style.opacity=0.3">
+        <div class="bot-info-panel">
+          <div class="bot-overlay-box bot-phien" id="botPhien">Phiên: --</div>
+          <div class="bot-overlay-box bot-pred" id="botResult">Dự đoán: --</div>
+          <div class="bot-overlay-box bot-tile" id="botTiLe">Tỉ lệ: --</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="game-title-badge" id="gameTitleBadge"><i class="fas fa-dice"></i><span id="gameTitleText">LC79</span></div>
+
+  <div class="menu-container-3gach">
+    <button class="btn-3gach-toggle" onclick="toggleMenu3Gach()"><i class="fas fa-bars"></i></button>
+    <div class="dropdown-menu-3gach" id="dropdown3Gach">
+      <button class="menu-3gach-item" onclick="backToKho()"><i class="fas fa-house"></i> Về Kho Game</button>
+      <button class="menu-3gach-item" onclick="toggleRobot()"><i class="fas fa-robot"></i> Bật/Ẩn Robot</button>
+      <button class="menu-3gach-item" onclick="rotateRobot()"><i class="fas fa-rotate"></i> Xoay Robot</button>
+      <button class="menu-3gach-item" onclick="resetRobotPos()"><i class="fas fa-crosshairs"></i> Về Vị Trí Gốc</button>
+      <button class="menu-3gach-item exit-btn" onclick="exitApp()"><i class="fas fa-right-from-bracket"></i> Thoát Ứng Dụng</button>
+    </div>
   </div>
 </div>
-<table>
-  <thead><tr><th>ID</th><th>Tên</th><th>Email</th><th>Vai trò</th><th>Ngày tạo</th><th>Hành động</th></tr></thead>
-  <tbody id="tbody"></tbody>
-</table>
+
+<div id="toast"></div>
+
 <script>
+(function(){ document.addEventListener('contextmenu', e => { const t = (e.target.tagName || '').toUpperCase(); if (t === 'INPUT' || t === 'TEXTAREA') return; e.preventDefault(); }); })();
+
 (async () => {
-  const r = await fetch('/api/admin/users');
-  const d = await r.json();
-  if (!d.ok) { alert('Không có quyền'); window.location.href='/'; return; }
-  const tb = document.getElementById('tbody');
-  d.users.forEach(u => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${u.id}</td>
-      <td>${u.name}</td>
-      <td>${u.email}</td>
-      <td class="${u.role==='admin'?'role-admin':''}">${u.role}</td>
-      <td>${new Date(u.created_at).toLocaleString('vi-VN')}</td>
-      <td><button class="btn-del" onclick="delUser(${u.id})">Xóa</button></td>
-    `;
-    tb.appendChild(tr);
-  });
+  try {
+    const r = await fetch('/api/me'); const d = await r.json();
+    if (!d.ok) { window.location.href = '/'; return; }
+  } catch(e){ window.location.href = '/'; }
 })();
-async function delUser(id){
-  if (!confirm('Xóa user này?')) return;
-  const r = await fetch('/api/admin/users/' + id, { method:'DELETE' });
-  const d = await r.json();
-  alert(d.msg);
-  if (d.ok) location.reload();
+
+let toolToken = null, tokenExp = 0;
+async function refreshToken() { try { const r = await fetch('/api/tool/token'); const j = await r.json(); if (j.ok) { toolToken = j.token; tokenExp = Number(j.token.split('.')[0]); } } catch(e){} }
+async function fetchPrediction(toolKey) {
+  if (!toolToken || Date.now() > tokenExp - 30000) await refreshToken();
+  if (!toolToken) throw new Error('No token');
+  const r = await fetch(`/api/tool/predict?game=${encodeURIComponent(toolKey)}`, { headers: { 'Accept': 'application/json', 'X-Tool-Token': toolToken } });
+  if (r.status === 401) { await refreshToken(); return fetchPrediction(toolKey); }
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const j = await r.json(); if (!j.ok) throw new Error(j.msg || 'API error');
+  return j.data;
 }
+
+const GAMES = {
+  md5: { name: 'LC79 MD', icon: 'fa-fingerprint', gameUrl: 'https://play.lc79h.vin', toolKey: 'md5' },
+  tx: { name: 'LC79 TÀI XỈU', icon: 'fa-dice', gameUrl: 'https://play.lc79h.vin', toolKey: 'tx' }
+};
+
+let currentGame = null, predTimer = null, isFetching = false, currentPhien = null, loadingTimeout = null, currentToolKey = null;
+
+function showToast(msg, dur=2200){ const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._timer); t._timer = setTimeout(()=>t.classList.remove('show'), dur); }
+function toggleMenu3Gach(){ document.getElementById('dropdown3Gach').classList.toggle('show'); }
+document.addEventListener('click', e=>{ const menu = document.getElementById('dropdown3Gach'); if (!menu || !menu.classList.contains('show')) return; if (e.target.closest('.menu-container-3gach')) return; menu.classList.remove('show'); });
+function switchView(id){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+
+function playGame(key){
+  const cfg = GAMES[key]; if (!cfg) return;
+  currentGame = key; document.getElementById('gameTitleText').textContent = cfg.name; document.querySelector('#gameTitleBadge i').className = 'fas ' + cfg.icon;
+  document.getElementById('botPhien').textContent = 'Phiên: --'; document.getElementById('botResult').textContent = 'Dự đoán: --'; document.getElementById('botTiLe').textContent = 'Tỉ lệ: --';
+  const iframe = document.getElementById('mainIframe'); iframe.src = 'about:blank'; setTimeout(()=>{ iframe.src = cfg.gameUrl; }, 60);
+  switchView('viewPlay'); currentPhien = null; if (predTimer) clearInterval(predTimer); if (loadingTimeout) clearTimeout(loadingTimeout);
+  startRealtimePredictionLoop(cfg.toolKey); showToast(`Đang vào ${cfg.name}...`);
+}
+
+function backToKho(){
+  if (predTimer) clearInterval(predTimer); if (loadingTimeout) clearTimeout(loadingTimeout);
+  predTimer = null; loadingTimeout = null; currentPhien = null; isFetching = false; currentGame = null; currentToolKey = null;
+  document.getElementById('mainIframe').src = 'about:blank'; switchView('viewKho'); document.getElementById('dropdown3Gach').classList.remove('show');
+}
+
+async function exitApp(){ if (!confirm('Bạn có chắc chắn muốn thoát HOÀNG TOOL?')) return; try { await fetch('/api/logout', { method:'POST' }); } catch(e){} window.location.href = '/'; }
+
+function toggleRobot(){ const node = document.getElementById('robotMasterNode'); node.style.display = node.style.display === 'none' ? 'block' : 'none'; document.getElementById('dropdown3Gach').classList.remove('show'); }
+let currentRotation = 0;
+function rotateRobot(){ currentRotation = (currentRotation + 90) % 360; document.getElementById('robotMasterNode').style.transform = `rotate(${currentRotation}deg)`; document.getElementById('dropdown3Gach').classList.remove('show'); }
+function resetRobotPos(){ const node = document.getElementById('robotMasterNode'); node.style.left = 'auto'; node.style.top = 'auto'; node.style.right = '20px'; node.style.bottom = '80px'; node.style.transform = `rotate(${currentRotation}deg)`; document.getElementById('dropdown3Gach').classList.remove('show'); showToast('Đã reset vị trí robot'); }
+
+function makeRobotDraggable(nodeId, handleId){
+  const node = document.getElementById(nodeId); const handle = document.getElementById(handleId); let dragging = false, sx=0, sy=0, bx=0, by=0;
+  function start(e){ dragging = true; const p = e.touches ? e.touches[0] : e; sx = p.clientX; sy = p.clientY; const r = node.getBoundingClientRect(); bx = r.left; by = r.top; node.style.left = bx+'px'; node.style.top = by+'px'; node.style.right = 'auto'; node.style.bottom = 'auto'; node.style.transition = 'none'; }
+  function move(e){ if (!dragging) return; e.preventDefault(); const p = e.touches ? e.touches[0] : e; node.style.left = (bx + p.clientX - sx)+'px'; node.style.top  = (by + p.clientY - sy)+'px'; }
+  function stop(){ if (!dragging) return; dragging = false; node.style.transition = 'transform .25s ease'; }
+  handle.addEventListener('mousedown', start); document.addEventListener('mousemove', move); document.addEventListener('mouseup', stop); handle.addEventListener('touchstart', start, { passive:false }); document.addEventListener('touchmove', move, { passive:false }); document.addEventListener('touchend', stop);
+}
+
+const REFRESH_INTERVAL = 6000;
+function startRealtimePredictionLoop(toolKey){ if (predTimer) clearInterval(predTimer); currentToolKey = toolKey; updatePredictionData(); predTimer = setInterval(updatePredictionData, REFRESH_INTERVAL); }
+
+async function updatePredictionData(){
+  if (isFetching || !currentToolKey) return; isFetching = true;
+  try { const data = await fetchPrediction(currentToolKey); renderPrediction(data); }
+  catch(err){ const el = document.getElementById('botResult'); if (el.textContent.includes('Đang') || el.textContent.includes('••••')) el.textContent = 'Dự đoán: Mất kết nối'; }
+  finally { isFetching = false; }
+}
+
+function renderPrediction(data){
+  const phien = String(data.phien || ''); const first = (currentPhien === null);
+  const show = () => {
+    document.getElementById('botPhien').textContent = `Phiên: ${phien || '--'}`; document.getElementById('botPhien').classList.remove('loading-dots');
+    document.getElementById('botResult').textContent = `Dự đoán: ${String(data.du_doan || '--').toUpperCase()}`; document.getElementById('botResult').className = 'bot-overlay-box bot-pred';
+    let tl = data.tin_cay ?? '--'; if (typeof tl === 'number' || (!isNaN(tl) && tl !== '--' && !String(tl).includes('%'))) tl += '%';
+    document.getElementById('botTiLe').textContent = `Tỉ lệ: ${tl}`; document.getElementById('botTiLe').classList.remove('loading-dots');
+  };
+  if (phien !== currentPhien){
+    currentPhien = phien; if (loadingTimeout) clearTimeout(loadingTimeout);
+    if (first || !phien) show();
+    else { document.querySelectorAll('.bot-overlay-box').forEach(b => { b.textContent = b.textContent.split(':')[0] + ': •••••'; b.classList.add('loading-dots'); }); loadingTimeout = setTimeout(show, 10000); }
+  }
+}
+
+(function(){
+  const cvs = document.getElementById('bgCanvas'); const ctx = cvs.getContext('2d'); let particles = [], mouse = { x:-9999, y:-9999 };
+  function resize(){ cvs.width = window.innerWidth * devicePixelRatio; cvs.height = window.innerHeight * devicePixelRatio; cvs.style.width = window.innerWidth+'px'; cvs.style.height = window.innerHeight+'px'; ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); init(); }
+  function init(){ const count = Math.min(90, Math.floor(window.innerWidth/16)); particles = []; for (let i=0;i<count;i++){ particles.push({ x: Math.random()*window.innerWidth, y: Math.random()*window.innerHeight, vx:(Math.random()-.5)*.4, vy:(Math.random()-.5)*.4, r: .8+Math.random()*1.8, hue: Math.random()<.5?350:(Math.random()<.5?320:200) }); } }
+  function draw(){
+    ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
+    for (let i=0;i<particles.length;i++){
+      const a = particles[i]; const dx = a.x-mouse.x, dy = a.y-mouse.y, dm = Math.hypot(dx,dy);
+      if (dm < 170 && dm > .01){ const f = (1-dm/170)*.55; a.x += dx/dm*f; a.y += dy/dm*f; }
+      a.x += a.vx; a.y += a.vy; if (a.x<0||a.x>window.innerWidth) a.vx*=-1; if (a.y<0||a.y>window.innerHeight) a.vy*=-1;
+      a.x = Math.max(0,Math.min(window.innerWidth,a.x)); a.y = Math.max(0,Math.min(window.innerHeight,a.y));
+      const g = ctx.createRadialGradient(a.x,a.y,0,a.x,a.y,a.r*4); g.addColorStop(0,`hsla(${a.hue},100%,70%,.9)`); g.addColorStop(1,`hsla(${a.hue},100%,50%,0)`); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(a.x,a.y,a.r*4,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = `hsla(${a.hue},100%,85%,1)`; ctx.beginPath(); ctx.arc(a.x,a.y,a.r,0,Math.PI*2); ctx.fill();
+      for (let j=i+1;j<particles.length;j++){ const b = particles[j], d = Math.hypot(a.x-b.x,a.y-b.y); if (d < 150){ ctx.strokeStyle = `hsla(350,100%,60%,${(1-d/150)*.35})`; ctx.lineWidth = .7; ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); } }
+      if (dm < 190){ ctx.strokeStyle = `hsla(320,100%,65%,${(1-dm/190)*.7})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(mouse.x,mouse.y); ctx.stroke(); }
+    }
+    if (mouse.x > 0){ const grd = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 190); grd.addColorStop(0,'rgba(255,0,51,.18)'); grd.addColorStop(1,'rgba(255,0,51,0)'); ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(mouse.x, mouse.y, 190, 0, Math.PI*2); ctx.fill(); }
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', resize); window.addEventListener('mousemove', e=>{ mouse.x=e.clientX; mouse.y=e.clientY; }); window.addEventListener('mouseleave', ()=>{ mouse.x=-9999; mouse.y=-9999; }); window.addEventListener('touchmove', e=>{ const t = e.touches[0]; mouse.x=t.clientX; mouse.y=t.clientY; }, {passive:true}); window.addEventListener('touchend', ()=>{ mouse.x=-9999; mouse.y=-9999; });
+  resize(); draw();
+})();
+
+window.addEventListener('load', ()=>{ makeRobotDraggable('robotMasterNode', 'draggableRobot'); });
 </script>
 </body>
 </html>
