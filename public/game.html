@@ -8,16 +8,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* Bảng màu mới: Xanh Cyan - Tím Neon - Hồng */
-  --bg1:#04030a; --bg2:#0a0618;
+  --bg1:#020208; --bg2:#08051a;
   --neon-cyan:#00f0ff;
   --neon-purple:#b026ff;
   --neon-pink:#ff2d95;
   --neon-blue:#2563eb;
   --neon-gold:#ffd700;
+  --neon-green:#22c55e;
   --text:#ffffff; --muted:#9d9dbb;
-  --card:rgba(16,10,32,.55);
-  --border:rgba(0,240,255,.25);
+  --card:rgba(12,8,28,.6);
+  --border:rgba(0,240,255,.2);
   --font-display:'Orbitron',sans-serif;
   --font-body:'Rajdhani',sans-serif;
 }
@@ -36,13 +36,13 @@ html,body{
 #viewKho{min-height:100vh;position:relative;overflow-x:hidden;}
 #bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
 
-/* === AURORA NỀN MÀU MỚI === */
+/* === AURORA NỀN === */
 .aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
-.aurora span{position:absolute;border-radius:50%;filter:blur(110px);opacity:.55;animation:float 22s ease-in-out infinite;}
-.aurora span:nth-child(1){width:560px;height:560px;background:radial-gradient(circle,#00f0ff,transparent 70%);top:-160px;left:-130px;}
-.aurora span:nth-child(2){width:520px;height:520px;background:radial-gradient(circle,#b026ff,transparent 70%);bottom:-180px;right:-120px;animation-delay:-7s;}
-.aurora span:nth-child(3){width:480px;height:480px;background:radial-gradient(circle,#ff2d95,transparent 70%);top:40%;left:55%;animation-delay:-13s;}
-.aurora span:nth-child(4){width:420px;height:420px;background:radial-gradient(circle,#2563eb,transparent 70%);bottom:15%;left:5%;animation-delay:-18s;}
+.aurora span{position:absolute;border-radius:50%;filter:blur(110px);opacity:.6;animation:float 22s ease-in-out infinite;}
+.aurora span:nth-child(1){width:600px;height:600px;background:radial-gradient(circle,#00f0ff,transparent 70%);top:-180px;left:-150px;}
+.aurora span:nth-child(2){width:560px;height:560px;background:radial-gradient(circle,#b026ff,transparent 70%);bottom:-200px;right:-130px;animation-delay:-7s;}
+.aurora span:nth-child(3){width:520px;height:520px;background:radial-gradient(circle,#ff2d95,transparent 70%);top:40%;left:55%;animation-delay:-13s;}
+.aurora span:nth-child(4){width:460px;height:460px;background:radial-gradient(circle,#2563eb,transparent 70%);bottom:15%;left:5%;animation-delay:-18s;}
 @keyframes float{
   0%,100%{transform:translate(0,0) scale(1);}
   33%{transform:translate(90px,-70px) scale(1.18);}
@@ -127,7 +127,7 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:60px 28p
 }
 .hero-kho .tag .dot{
   width:8px;height:8px;border-radius:50%;
-  background:#22c55e;box-shadow:0 0 12px #22c55e;
+  background:var(--neon-green);box-shadow:0 0 12px var(--neon-green);
   animation:pulse 1.6s infinite;
 }
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
@@ -144,12 +144,12 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:60px 28p
 .hero-kho p{color:var(--muted);font-size:1.08rem;max-width:560px;margin:0 auto;line-height:1.7;font-weight:500;}
 
 /* === GAME GRID === */
-.game-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:30px;margin-top:20px;}
+.game-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px;margin-top:20px;}
 .game-card{
   position:relative;
   background:var(--card);
   border:1px solid var(--border);
-  border-radius:28px;padding:34px 26px;
+  border-radius:28px;padding:32px 24px;
   backdrop-filter:blur(24px) saturate(180%);
   -webkit-backdrop-filter:blur(24px);
   cursor:pointer;
@@ -159,7 +159,9 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:60px 28p
   box-shadow:0 8px 32px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06);
 }
 .game-card:nth-child(1){animation-delay:.1s;}
-.game-card:nth-child(2){animation-delay:.25s;}
+.game-card:nth-child(2){animation-delay:.2s;}
+.game-card:nth-child(3){animation-delay:.3s;}
+.game-card:nth-child(4){animation-delay:.4s;}
 @keyframes cardIn{from{opacity:0;transform:translateY(40px) scale(.94);}to{opacity:1;transform:translateY(0) scale(1);}}
 
 /* Viền phát sáng chạy vòng */
@@ -183,13 +185,27 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:60px 28p
   transform:translateY(-14px) scale(1.02);
   border-color:rgba(0,240,255,.7);
   box-shadow:0 30px 70px -20px rgba(0,240,255,.6),0 0 50px rgba(176,38,255,.25);
-  background:rgba(20,12,40,.7);
+  background:rgba(20,12,40,.75);
 }
+
+/* Hiệu ứng quét laser khi hover */
+.game-card .laser-scan{
+  position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:28px;
+  opacity:0;transition:.3s;
+}
+.game-card:hover .laser-scan{opacity:1;}
+.game-card .laser-scan::before{
+  content:'';position:absolute;top:-100%;left:0;width:100%;height:2px;
+  background:linear-gradient(90deg,transparent,var(--neon-cyan),transparent);
+  box-shadow:0 0 20px var(--neon-cyan),0 0 40px var(--neon-cyan);
+  animation:scanDown 2.5s linear infinite;
+}
+@keyframes scanDown{0%{top:-10%;}100%{top:110%;}}
 
 /* Logo game */
 .game-logo{
-  width:100%;aspect-ratio:1/1;max-width:190px;
-  margin:0 auto 26px;border-radius:26px;
+  width:100%;aspect-ratio:1/1;max-width:170px;
+  margin:0 auto 24px;border-radius:24px;
   overflow:hidden;position:relative;
   border:2px solid rgba(0,240,255,.35);
   box-shadow:0 20px 50px -15px rgba(0,0,0,.9),inset 0 0 25px rgba(0,240,255,.15);
@@ -211,30 +227,30 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:60px 28p
 .game-info{text-align:center;}
 .game-name{
   font-family:var(--font-display);
-  font-size:1.35rem;font-weight:900;
-  letter-spacing:1px;margin-bottom:10px;
+  font-size:1.3rem;font-weight:900;
+  letter-spacing:1px;margin-bottom:8px;
   color:#fff;text-shadow:0 0 25px rgba(0,240,255,.6);
 }
-.game-tagline{font-size:.9rem;color:var(--muted);line-height:1.6;margin-bottom:20px;font-weight:500;}
+.game-tagline{font-size:.85rem;color:var(--muted);line-height:1.6;margin-bottom:18px;font-weight:500;}
 .game-status{
   display:inline-flex;align-items:center;gap:8px;
-  font-size:.72rem;font-weight:800;letter-spacing:1.5px;
-  padding:6px 16px;border-radius:40px;
+  font-size:.7rem;font-weight:800;letter-spacing:1.5px;
+  padding:5px 14px;border-radius:40px;
   background:rgba(34,197,94,.1);
   border:1px solid rgba(34,197,94,.4);
-  color:#4ade80;margin-bottom:22px;
+  color:#4ade80;margin-bottom:20px;
   font-family:var(--font-display);
   box-shadow:0 0 15px rgba(34,197,94,.15);
 }
-.game-status i{font-size:.6rem;animation:pulse 1.5s infinite;}
+.game-status i{font-size:.55rem;animation:pulse 1.5s infinite;}
 
 /* Nút chơi */
 .btn-play{
   width:100%;
   background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));
   border:none;border-radius:16px;
-  padding:16px;
-  font-size:1rem;font-weight:900;letter-spacing:2px;
+  padding:15px;
+  font-size:.95rem;font-weight:900;letter-spacing:2px;
   color:#fff;cursor:pointer;
   display:flex;align-items:center;justify-content:center;gap:10px;
   box-shadow:0 15px 35px -10px var(--neon-cyan),inset 0 1px 0 rgba(255,255,255,.3);
@@ -350,8 +366,8 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:60px 28p
   .hero-kho p{font-size:.95rem;}
   .hero-kho .tag{font-size:.7rem;padding:6px 16px;}
   .game-grid{grid-template-columns:1fr;gap:22px;}
-  .game-card{padding:28px 22px;}
-  .game-logo{max-width:160px;}
+  .game-card{padding:26px 20px;}
+  .game-logo{max-width:150px;}
   .game-name{font-size:1.15rem;}
   .btn-play{padding:14px;font-size:.9rem;}
   .robot-projection-container{width:290px;}
@@ -433,7 +449,9 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:60px 28p
     </div>
 
     <div class="game-grid">
+      <!-- 1. LC79 MD -->
       <div class="game-card" onclick="playGame('md5')">
+        <div class="laser-scan"></div>
         <div class="game-logo"><img src="https://i.postimg.cc/C16fC9My/IMG-0544.jpg" alt="LC79 MD"></div>
         <div class="game-info">
           <div class="game-name">LC79 MD</div>
@@ -442,13 +460,40 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:60px 28p
           <button class="btn-play" onclick="event.stopPropagation();playGame('md5')"><i class="fas fa-play"></i> BẮT ĐẦU</button>
         </div>
       </div>
+
+      <!-- 2. LC79 Tài Xỉu -->
       <div class="game-card" onclick="playGame('tx')">
+        <div class="laser-scan"></div>
         <div class="game-logo"><img src="https://i.postimg.cc/C16fC9My/IMG-0544.jpg" alt="LC79 Tài Xỉu"></div>
         <div class="game-info">
           <div class="game-name">LC79 TÀI XỈU</div>
           <div class="game-tagline">Tool Tài Xỉu — AI dự đoán Tài / Xỉu chuẩn xác</div>
           <div class="game-status"><i class="fas fa-circle"></i> ONLINE</div>
           <button class="btn-play" onclick="event.stopPropagation();playGame('tx')"><i class="fas fa-play"></i> BẮT ĐẦU</button>
+        </div>
+      </div>
+
+      <!-- 3. MAX789 MD5 -->
+      <div class="game-card" onclick="playGame('max789_md5')">
+        <div class="laser-scan"></div>
+        <div class="game-logo"><img src="https://i.postimg.cc/0yRZTNck/IMG-2232.jpg" alt="Max789 MD5"></div>
+        <div class="game-info">
+          <div class="game-name">MAX789 MD5</div>
+          <div class="game-tagline">Tool MD5 Max789 — Phân tích & dự đoán phiên</div>
+          <div class="game-status"><i class="fas fa-circle"></i> ONLINE</div>
+          <button class="btn-play" onclick="event.stopPropagation();playGame('max789_md5')"><i class="fas fa-play"></i> BẮT ĐẦU</button>
+        </div>
+      </div>
+
+      <!-- 4. MAX789 Tài Xỉu -->
+      <div class="game-card" onclick="playGame('max789_tx')">
+        <div class="laser-scan"></div>
+        <div class="game-logo"><img src="https://i.postimg.cc/0yRZTNck/IMG-2232.jpg" alt="Max789 Tài Xỉu"></div>
+        <div class="game-info">
+          <div class="game-name">MAX789 TÀI XỈU</div>
+          <div class="game-tagline">Tool Tài Xỉu Max789 — AI dự đoán Tài / Xỉu</div>
+          <div class="game-status"><i class="fas fa-circle"></i> ONLINE</div>
+          <button class="btn-play" onclick="event.stopPropagation();playGame('max789_tx')"><i class="fas fa-play"></i> BẮT ĐẦU</button>
         </div>
       </div>
     </div>
@@ -542,9 +587,12 @@ function exitApp(){
   }
 }
 
+// ====== CẤU HÌNH 4 GAME ======
 const GAMES = {
   md5: { name: 'LC79 MD', icon: 'fa-fingerprint', gameUrl: 'https://play.lc79h.vin', toolKey: 'md5' },
-  tx: { name: 'LC79 TÀI XỈU', icon: 'fa-dice', gameUrl: 'https://play.lc79h.vin', toolKey: 'tx' }
+  tx: { name: 'LC79 TÀI XỈU', icon: 'fa-dice', gameUrl: 'https://play.lc79h.vin', toolKey: 'tx' },
+  max789_md5: { name: 'MAX789 MD5', icon: 'fa-fingerprint', gameUrl: 'https://play.max789h.vin', toolKey: 'max789_md5' },
+  max789_tx: { name: 'MAX789 TÀI XỈU', icon: 'fa-dice', gameUrl: 'https://play.max789h.vin', toolKey: 'max789_tx' }
 };
 
 let currentGame = null;
@@ -562,17 +610,33 @@ async function refreshToken() {
     if (j.ok) { toolToken = j.token; tokenExp = Number(j.token.split('.')[0]); }
   } catch(e){}
 }
+
 async function fetchPrediction(toolKey) {
-  if (!toolToken || Date.now() > tokenExp - 30000) await refreshToken();
-  if (!toolToken) throw new Error('Không lấy được token');
-  const r = await fetch(`/api/tool/predict?game=${encodeURIComponent(toolKey)}`, {
-    headers: { 'Accept': 'application/json', 'X-Tool-Token': toolToken }
-  });
-  if (r.status === 401) { await refreshToken(); return fetchPrediction(toolKey); }
-  if (!r.ok) throw new Error('HTTP ' + r.status);
-  const j = await r.json();
-  if (!j.ok) throw new Error(j.msg || 'API lỗi');
-  return j.data;
+  if (toolKey === 'md5' || toolKey === 'tx') {
+    if (!toolToken || Date.now() > tokenExp - 30000) await refreshToken();
+    if (!toolToken) throw new Error('Không lấy được token');
+    const r = await fetch(`/api/tool/predict?game=${encodeURIComponent(toolKey)}`, {
+      headers: { 'Accept': 'application/json', 'X-Tool-Token': toolToken }
+    });
+    if (r.status === 401) { await refreshToken(); return fetchPrediction(toolKey); }
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.msg || 'API lỗi');
+    return j.data;
+  } 
+  else if (toolKey === 'max789_md5') {
+    const r = await fetch('https://max789-sex.onrender.com/api/md5/max789');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    return { phien: j.phien_hien_tai || j.phien_truoc || '--', du_doan: j.du_doan || '--', tin_cay: j.do_tin_cay || '--' };
+  } 
+  else if (toolKey === 'max789_tx') {
+    const r = await fetch('https://max789-sex.onrender.com/api/taixiu/max789');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    return { phien: j.phien_hien_tai || j.phien_truoc || '--', du_doan: j.du_doan || '--', tin_cay: j.do_tin_cay || '--' };
+  } 
+  else throw new Error('Tool key không hợp lệ');
 }
 
 function playGame(key){
