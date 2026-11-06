@@ -82,6 +82,8 @@ main{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:50px 24p
 .game-card{position:relative;background:var(--card);border:1px solid var(--border);border-radius:26px;padding:32px 26px;backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px);cursor:pointer;transition:.4s cubic-bezier(.34,1.56,.64,1);overflow:hidden;animation:cardIn .7s backwards;}
 .game-card:nth-child(1){animation-delay:.1s;}
 .game-card:nth-child(2){animation-delay:.25s;}
+.game-card:nth-child(3){animation-delay:.35s;}
+.game-card:nth-child(4){animation-delay:.45s;}
 @keyframes cardIn{from{opacity:0;transform:translateY(30px) scale(.95);}to{opacity:1;transform:translateY(0) scale(1);}}
 .game-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--neon-red),transparent);opacity:0;transition:.4s;}
 .game-card:hover{transform:translateY(-10px) scale(1.02);border-color:rgba(255,0,51,.6);box-shadow:0 25px 60px -15px rgba(255,0,51,.6),0 0 40px rgba(255,0,51,.3);}
@@ -233,6 +235,7 @@ main{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:50px 24p
     </div>
 
     <div class="game-grid">
+      <!-- Game cũ: LC79 MD -->
       <div class="game-card" onclick="playGame('md5')">
         <div class="game-logo"><img src="https://i.postimg.cc/C16fC9My/IMG-0544.jpg" alt="LC79 MD"></div>
         <div class="game-info">
@@ -242,6 +245,7 @@ main{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:50px 24p
           <button class="btn-play" onclick="event.stopPropagation();playGame('md5')"><i class="fas fa-play"></i> BẮT ĐẦU</button>
         </div>
       </div>
+      <!-- Game cũ: LC79 Tài Xỉu -->
       <div class="game-card" onclick="playGame('tx')">
         <div class="game-logo"><img src="https://i.postimg.cc/C16fC9My/IMG-0544.jpg" alt="LC79 Tài Xỉu"></div>
         <div class="game-info">
@@ -249,6 +253,28 @@ main{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:50px 24p
           <div class="game-tagline">Tool Tài Xỉu — AI dự đoán Tài / Xỉu chuẩn xác</div>
           <div class="game-status"><i class="fas fa-circle"></i> ONLINE</div>
           <button class="btn-play" onclick="event.stopPropagation();playGame('tx')"><i class="fas fa-play"></i> BẮT ĐẦU</button>
+        </div>
+      </div>
+
+      <!-- ===== GAME MỚI: MAX789 MD5 ===== -->
+      <div class="game-card" onclick="playGame('max789_md5')">
+        <div class="game-logo"><img src="https://i.postimg.cc/0yRZTNck/IMG-2232.jpg" alt="Max789 MD5"></div>
+        <div class="game-info">
+          <div class="game-name">MAX789 MD5</div>
+          <div class="game-tagline">Tool MD5 Max789 — Phân tích & dự đoán phiên</div>
+          <div class="game-status"><i class="fas fa-circle"></i> ONLINE</div>
+          <button class="btn-play" onclick="event.stopPropagation();playGame('max789_md5')"><i class="fas fa-play"></i> BẮT ĐẦU</button>
+        </div>
+      </div>
+
+      <!-- ===== GAME MỚI: MAX789 TÀI XỈU ===== -->
+      <div class="game-card" onclick="playGame('max789_tx')">
+        <div class="game-logo"><img src="https://i.postimg.cc/0yRZTNck/IMG-2232.jpg" alt="Max789 Tài Xỉu"></div>
+        <div class="game-info">
+          <div class="game-name">MAX789 TÀI XỈU</div>
+          <div class="game-tagline">Tool Tài Xỉu Max789 — AI dự đoán Tài / Xỉu</div>
+          <div class="game-status"><i class="fas fa-circle"></i> ONLINE</div>
+          <button class="btn-play" onclick="event.stopPropagation();playGame('max789_tx')"><i class="fas fa-play"></i> BẮT ĐẦU</button>
         </div>
       </div>
     </div>
@@ -342,9 +368,23 @@ function exitApp(){
   }
 }
 
+// ====== CẤU HÌNH GAME ======
 const GAMES = {
   md5: { name: 'LC79 MD', icon: 'fa-fingerprint', gameUrl: 'https://play.lc79h.vin', toolKey: 'md5' },
-  tx: { name: 'LC79 TÀI XỈU', icon: 'fa-dice', gameUrl: 'https://play.lc79h.vin', toolKey: 'tx' }
+  tx: { name: 'LC79 TÀI XỈU', icon: 'fa-dice', gameUrl: 'https://play.lc79h.vin', toolKey: 'tx' },
+  // Game mới Max789
+  max789_md5: { 
+    name: 'MAX789 MD5', 
+    icon: 'fa-fingerprint', 
+    gameUrl: 'https://play.max789h.vin', 
+    toolKey: 'max789_md5' // key riêng để gọi API
+  },
+  max789_tx: { 
+    name: 'MAX789 TÀI XỈU', 
+    icon: 'fa-dice', 
+    gameUrl: 'https://play.max789h.vin', 
+    toolKey: 'max789_tx' 
+  }
 };
 
 let currentGame = null;
@@ -362,17 +402,54 @@ async function refreshToken() {
     if (j.ok) { toolToken = j.token; tokenExp = Number(j.token.split('.')[0]); }
   } catch(e){}
 }
+
+// ====== HÀM GỌI API DỰ ĐOÁN ======
 async function fetchPrediction(toolKey) {
-  if (!toolToken || Date.now() > tokenExp - 30000) await refreshToken();
-  if (!toolToken) throw new Error('Không lấy được token');
-  const r = await fetch(`/api/tool/predict?game=${encodeURIComponent(toolKey)}`, {
-    headers: { 'Accept': 'application/json', 'X-Tool-Token': toolToken }
-  });
-  if (r.status === 401) { await refreshToken(); return fetchPrediction(toolKey); }
-  if (!r.ok) throw new Error('HTTP ' + r.status);
-  const j = await r.json();
-  if (!j.ok) throw new Error(j.msg || 'API lỗi');
-  return j.data;
+  // Xác định URL API dựa vào toolKey
+  let apiUrl = '';
+  if (toolKey === 'md5' || toolKey === 'tx') {
+    // Game cũ dùng API nội bộ (có token)
+    if (!toolToken || Date.now() > tokenExp - 30000) await refreshToken();
+    if (!toolToken) throw new Error('Không lấy được token');
+    apiUrl = `/api/tool/predict?game=${encodeURIComponent(toolKey)}`;
+    const r = await fetch(apiUrl, {
+      headers: { 'Accept': 'application/json', 'X-Tool-Token': toolToken }
+    });
+    if (r.status === 401) { await refreshToken(); return fetchPrediction(toolKey); }
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.msg || 'API lỗi');
+    return j.data;
+  } 
+  else if (toolKey === 'max789_md5') {
+    // API Max789 MD5
+    apiUrl = 'https://max789-sex.onrender.com/api/md5/max789';
+    const r = await fetch(apiUrl);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    // Chuẩn hóa dữ liệu trả về theo format mà renderPrediction mong đợi
+    return {
+      phien: j.phien_hien_tai || j.phien_truoc || '--',
+      du_doan: j.du_doan || '--',
+      tin_cay: j.do_tin_cay || '--',
+      // có thể thêm các trường khác nếu cần
+    };
+  } 
+  else if (toolKey === 'max789_tx') {
+    // API Max789 Tài Xỉu
+    apiUrl = 'https://max789-sex.onrender.com/api/taixiu/max789';
+    const r = await fetch(apiUrl);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    return {
+      phien: j.phien_hien_tai || j.phien_truoc || '--',
+      du_doan: j.du_doan || '--',
+      tin_cay: j.do_tin_cay || '--',
+    };
+  } 
+  else {
+    throw new Error('Tool key không hợp lệ');
+  }
 }
 
 function playGame(key){
