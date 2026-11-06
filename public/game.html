@@ -5,18 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>HOÀNG TOOL — Kho Game</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg1:#030008; --bg2:#0a0416;
-  --neon-red:#ff003c; --neon-gold:#ffcc00;
-  --neon-pink:#ff2d95; --neon-cyan:#00e5ff;
-  --neon-purple:#8b5cf6;
-  --text:#ffffff; --muted:#8a8aa0;
-  --card:rgba(18,8,28,.45);
-  --border:rgba(255,0,60,.3);
-  --font-display: 'Orbitron', sans-serif;
-  --font-body: 'Rajdhani', sans-serif;
+  /* Bảng màu mới: Xanh Cyan - Tím Neon - Hồng */
+  --bg1:#04030a; --bg2:#0a0618;
+  --neon-cyan:#00f0ff;
+  --neon-purple:#b026ff;
+  --neon-pink:#ff2d95;
+  --neon-blue:#2563eb;
+  --neon-gold:#ffd700;
+  --text:#ffffff; --muted:#9d9dbb;
+  --card:rgba(16,10,32,.55);
+  --border:rgba(0,240,255,.25);
+  --font-display:'Orbitron',sans-serif;
+  --font-body:'Rajdhani',sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{
@@ -33,133 +36,120 @@ html,body{
 #viewKho{min-height:100vh;position:relative;overflow-x:hidden;}
 #bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
 
-/* === AURORA NỀN === */
+/* === AURORA NỀN MÀU MỚI === */
 .aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
-.aurora span{position:absolute;border-radius:50%;filter:blur(120px);opacity:.6;animation:float 24s ease-in-out infinite;}
-.aurora span:nth-child(1){width:600px;height:600px;background:radial-gradient(circle,#ff003c,transparent 70%);top:-180px;left:-150px;}
-.aurora span:nth-child(2){width:550px;height:550px;background:radial-gradient(circle,#ff2d95,transparent 70%);bottom:-200px;right:-120px;animation-delay:-8s;}
-.aurora span:nth-child(3){width:500px;height:500px;background:radial-gradient(circle,#8b5cf6,transparent 70%);top:40%;left:55%;animation-delay:-14s;}
-.aurora span:nth-child(4){width:450px;height:450px;background:radial-gradient(circle,#00e5ff,transparent 70%);bottom:15%;left:5%;animation-delay:-18s;}
+.aurora span{position:absolute;border-radius:50%;filter:blur(110px);opacity:.55;animation:float 22s ease-in-out infinite;}
+.aurora span:nth-child(1){width:560px;height:560px;background:radial-gradient(circle,#00f0ff,transparent 70%);top:-160px;left:-130px;}
+.aurora span:nth-child(2){width:520px;height:520px;background:radial-gradient(circle,#b026ff,transparent 70%);bottom:-180px;right:-120px;animation-delay:-7s;}
+.aurora span:nth-child(3){width:480px;height:480px;background:radial-gradient(circle,#ff2d95,transparent 70%);top:40%;left:55%;animation-delay:-13s;}
+.aurora span:nth-child(4){width:420px;height:420px;background:radial-gradient(circle,#2563eb,transparent 70%);bottom:15%;left:5%;animation-delay:-18s;}
 @keyframes float{
   0%,100%{transform:translate(0,0) scale(1);}
-  33%{transform:translate(100px,-70px) scale(1.2);}
-  66%{transform:translate(-80px,90px) scale(.85);}
+  33%{transform:translate(90px,-70px) scale(1.18);}
+  66%{transform:translate(-70px,80px) scale(.88);}
 }
 
 /* === LƯỚI NỀN === */
 .grid-overlay{
   position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:linear-gradient(rgba(255,0,60,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,0,60,.07) 1px,transparent 1px);
-  background-size:50px 50px;
-  mask-image:radial-gradient(ellipse at 50% 40%,black 20%,transparent 75%);
-  -webkit-mask-image:radial-gradient(ellipse at 50% 40%,black 20%,transparent 75%);
-  animation:gridMove 20s linear infinite;
+  background-image:linear-gradient(rgba(0,240,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.06) 1px,transparent 1px);
+  background-size:55px 55px;
+  mask-image:radial-gradient(ellipse at 50% 40%,black 25%,transparent 80%);
+  -webkit-mask-image:radial-gradient(ellipse at 50% 40%,black 25%,transparent 80%);
+  animation:gridMove 25s linear infinite;
 }
-@keyframes gridMove{0%{background-position:0 0;}100%{background-position:50px 50px;}}
+@keyframes gridMove{0%{background-position:0 0;}100%{background-position:55px 55px;}}
 
 /* === TOPBAR === */
 .topbar{
   position:sticky;top:0;z-index:50;
   display:flex;align-items:center;justify-content:space-between;
   padding:16px 28px;
-  background:rgba(5,2,10,.6);
+  background:rgba(4,3,10,.65);
   backdrop-filter:blur(24px) saturate(180%);
   -webkit-backdrop-filter:blur(24px);
-  border-bottom:1px solid rgba(255,0,60,.15);
+  border-bottom:1px solid rgba(0,240,255,.15);
   box-shadow:0 4px 30px rgba(0,0,0,.5);
 }
 .brand{display:flex;align-items:center;gap:14px;font-family:var(--font-display);font-size:1.3rem;font-weight:900;letter-spacing:2px;}
 .brand .logo-mark{
   width:46px;height:46px;border-radius:14px;overflow:hidden;
-  border:2px solid var(--neon-red);
-  box-shadow:0 0 20px rgba(255,0,60,.8),inset 0 0 12px rgba(255,0,60,.4);
-  flex-shrink:0;
-  transition:.3s;
+  border:2px solid var(--neon-cyan);
+  box-shadow:0 0 22px rgba(0,240,255,.8),inset 0 0 12px rgba(0,240,255,.4);
+  flex-shrink:0;transition:.3s;
 }
 .brand .logo-mark:hover{transform:rotate(8deg) scale(1.05);}
 .brand .logo-mark img{width:100%;height:100%;object-fit:cover;display:block;}
 .brand .name{
-  background:linear-gradient(90deg,#ff003c,#ff2d95,#ffcc00);
+  background:linear-gradient(90deg,#00f0ff,#b026ff,#ff2d95);
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-  filter:drop-shadow(0 0 14px rgba(255,45,149,.6));
+  filter:drop-shadow(0 0 14px rgba(0,240,255,.6));
 }
 .topbar-right{display:flex;align-items:center;gap:12px;}
 .admin-chip{
   display:flex;align-items:center;gap:8px;
-  background:rgba(255,204,0,.06);
-  border:1px solid rgba(255,204,0,.4);
+  background:rgba(255,215,0,.06);
+  border:1px solid rgba(255,215,0,.4);
   padding:8px 16px;border-radius:40px;
   font-size:.82rem;font-weight:700;color:var(--neon-gold);
   font-family:var(--font-body);
-  box-shadow:0 0 15px rgba(255,204,0,.15);
+  box-shadow:0 0 15px rgba(255,215,0,.15);
 }
 .btn-exit-top{
-  background:rgba(255,0,60,.1);
-  border:1px solid var(--neon-red);
-  color:#ff99aa;
+  background:rgba(0,240,255,.1);
+  border:1px solid var(--neon-cyan);
+  color:#8bf4ff;
   padding:9px 16px;border-radius:10px;
   font-size:.85rem;font-weight:800;cursor:pointer;
   display:flex;align-items:center;gap:8px;
   transition:.25s;text-decoration:none;
-  font-family:var(--font-body);
-  letter-spacing:.5px;
+  font-family:var(--font-body);letter-spacing:.5px;
 }
-.btn-exit-top:hover{background:rgba(255,0,60,.3);color:#fff;box-shadow:0 0 20px rgba(255,0,60,.4);}
+.btn-exit-top:hover{background:rgba(0,240,255,.3);color:#fff;box-shadow:0 0 20px rgba(0,240,255,.4);}
 
 /* === MAIN === */
-main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:70px 28px 140px;}
+main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:60px 28px 130px;}
 
 /* === HERO === */
-.hero-kho{text-align:center;margin-bottom:70px;animation:dropIn .8s cubic-bezier(.34,1.56,.64,1);}
+.hero-kho{text-align:center;margin-bottom:65px;animation:dropIn .8s cubic-bezier(.34,1.56,.64,1);}
 @keyframes dropIn{from{opacity:0;transform:translateY(-40px);}to{opacity:1;transform:translateY(0);}}
 .hero-kho .tag{
   display:inline-flex;align-items:center;gap:10px;
-  background:rgba(255,0,60,.08);
-  border:1px solid rgba(255,0,60,.4);
-  color:#ff6680;
+  background:rgba(0,240,255,.08);
+  border:1px solid rgba(0,240,255,.4);
+  color:#8bf4ff;
   padding:8px 22px;border-radius:40px;
   font-size:.78rem;font-weight:800;letter-spacing:3px;
-  margin-bottom:26px;
+  margin-bottom:24px;
   font-family:var(--font-display);
-  box-shadow:0 0 25px rgba(255,0,60,.15);
+  box-shadow:0 0 25px rgba(0,240,255,.15);
   text-transform:uppercase;
 }
 .hero-kho .tag .dot{
   width:8px;height:8px;border-radius:50%;
-  background:#22c55e;
-  box-shadow:0 0 12px #22c55e;
+  background:#22c55e;box-shadow:0 0 12px #22c55e;
   animation:pulse 1.6s infinite;
 }
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
 .hero-kho h1{
   font-family:var(--font-display);
-  font-size:3.4rem;font-weight:900;
-  letter-spacing:-1px;line-height:1.1;
-  margin-bottom:20px;
+  font-size:3.2rem;font-weight:900;
+  letter-spacing:-1px;line-height:1.1;margin-bottom:18px;
 }
 .hero-kho h1 .grad{
-  background:linear-gradient(90deg,#ff003c,#ff2d95,#ffcc00);
+  background:linear-gradient(90deg,#00f0ff,#b026ff,#ff2d95);
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-  filter:drop-shadow(0 0 25px rgba(255,0,60,.6));
+  filter:drop-shadow(0 0 25px rgba(0,240,255,.6));
 }
-.hero-kho p{
-  color:var(--muted);font-size:1.1rem;
-  max-width:560px;margin:0 auto;line-height:1.7;
-  font-weight:500;
-}
+.hero-kho p{color:var(--muted);font-size:1.08rem;max-width:560px;margin:0 auto;line-height:1.7;font-weight:500;}
 
 /* === GAME GRID === */
-.game-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-  gap:32px;margin-top:20px;
-}
+.game-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:30px;margin-top:20px;}
 .game-card{
   position:relative;
   background:var(--card);
   border:1px solid var(--border);
-  border-radius:28px;
-  padding:36px 28px;
+  border-radius:28px;padding:34px 26px;
   backdrop-filter:blur(24px) saturate(180%);
   -webkit-backdrop-filter:blur(24px);
   cursor:pointer;
@@ -169,15 +159,13 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:70px 28p
   box-shadow:0 8px 32px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06);
 }
 .game-card:nth-child(1){animation-delay:.1s;}
-.game-card:nth-child(2){animation-delay:.22s;}
-.game-card:nth-child(3){animation-delay:.34s;}
-.game-card:nth-child(4){animation-delay:.46s;}
+.game-card:nth-child(2){animation-delay:.25s;}
 @keyframes cardIn{from{opacity:0;transform:translateY(40px) scale(.94);}to{opacity:1;transform:translateY(0) scale(1);}}
 
-/* Viền phát sáng khi hover */
+/* Viền phát sáng chạy vòng */
 .game-card::before{
   content:'';position:absolute;inset:-2px;border-radius:30px;
-  background:conic-gradient(from var(--angle,0deg),transparent 0%,var(--neon-red) 20%,var(--neon-pink) 40%,transparent 60%);
+  background:conic-gradient(from var(--angle,0deg),transparent 0%,var(--neon-cyan) 20%,var(--neon-purple) 40%,transparent 60%);
   opacity:0;transition:.5s;z-index:-1;
   animation:rotateBorder 4s linear infinite;
 }
@@ -188,15 +176,14 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:70px 28p
   content:'';position:absolute;top:-60%;left:-120%;
   width:60%;height:220%;
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);
-  transform:rotate(25deg);
-  transition:.8s;pointer-events:none;
+  transform:rotate(25deg);transition:.8s;pointer-events:none;
 }
 .game-card:hover::after{left:160%;}
 .game-card:hover{
   transform:translateY(-14px) scale(1.02);
-  border-color:rgba(255,0,60,.7);
-  box-shadow:0 30px 70px -20px rgba(255,0,60,.7),0 0 50px rgba(255,0,60,.25);
-  background:rgba(25,10,35,.6);
+  border-color:rgba(0,240,255,.7);
+  box-shadow:0 30px 70px -20px rgba(0,240,255,.6),0 0 50px rgba(176,38,255,.25);
+  background:rgba(20,12,40,.7);
 }
 
 /* Logo game */
@@ -204,14 +191,14 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:70px 28p
   width:100%;aspect-ratio:1/1;max-width:190px;
   margin:0 auto 26px;border-radius:26px;
   overflow:hidden;position:relative;
-  border:2px solid rgba(255,0,60,.35);
-  box-shadow:0 20px 50px -15px rgba(0,0,0,.9),inset 0 0 25px rgba(255,0,60,.15);
+  border:2px solid rgba(0,240,255,.35);
+  box-shadow:0 20px 50px -15px rgba(0,0,0,.9),inset 0 0 25px rgba(0,240,255,.15);
   transition:.5s cubic-bezier(.34,1.56,.64,1);
 }
 .game-card:hover .game-logo{
   transform:scale(1.06) rotate(-1deg);
-  border-color:var(--neon-red);
-  box-shadow:0 25px 60px -15px rgba(255,0,60,.8),0 0 40px rgba(255,0,60,.5);
+  border-color:var(--neon-cyan);
+  box-shadow:0 25px 60px -15px rgba(0,240,255,.7),0 0 40px rgba(0,240,255,.5);
 }
 .game-logo img{width:100%;height:100%;object-fit:cover;display:block;}
 .game-logo::after{
@@ -226,14 +213,9 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:70px 28p
   font-family:var(--font-display);
   font-size:1.35rem;font-weight:900;
   letter-spacing:1px;margin-bottom:10px;
-  color:#fff;
-  text-shadow:0 0 25px rgba(255,0,60,.6);
+  color:#fff;text-shadow:0 0 25px rgba(0,240,255,.6);
 }
-.game-tagline{
-  font-size:.9rem;color:var(--muted);
-  line-height:1.6;margin-bottom:20px;
-  font-weight:500;
-}
+.game-tagline{font-size:.9rem;color:var(--muted);line-height:1.6;margin-bottom:20px;font-weight:500;}
 .game-status{
   display:inline-flex;align-items:center;gap:8px;
   font-size:.72rem;font-weight:800;letter-spacing:1.5px;
@@ -249,13 +231,13 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:70px 28p
 /* Nút chơi */
 .btn-play{
   width:100%;
-  background:linear-gradient(135deg,var(--neon-red),var(--neon-pink));
+  background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));
   border:none;border-radius:16px;
   padding:16px;
   font-size:1rem;font-weight:900;letter-spacing:2px;
   color:#fff;cursor:pointer;
   display:flex;align-items:center;justify-content:center;gap:10px;
-  box-shadow:0 15px 35px -10px var(--neon-red),inset 0 1px 0 rgba(255,255,255,.3);
+  box-shadow:0 15px 35px -10px var(--neon-cyan),inset 0 1px 0 rgba(255,255,255,.3);
   transition:.3s;font-family:var(--font-display);
   position:relative;overflow:hidden;
 }
@@ -268,7 +250,7 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:70px 28p
 .btn-play:hover::before{left:100%;}
 .btn-play:hover{
   transform:translateY(-3px);
-  box-shadow:0 22px 45px -10px var(--neon-red),0 0 30px rgba(255,0,60,.7),inset 0 1px 0 rgba(255,255,255,.3);
+  box-shadow:0 22px 45px -10px var(--neon-cyan),0 0 30px rgba(0,240,255,.7),inset 0 1px 0 rgba(255,255,255,.3);
 }
 
 /* === VIEW PLAY === */
@@ -281,113 +263,76 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:70px 28p
 /* Menu 3 gạch */
 .menu-container-3gach{position:absolute;top:18px;left:18px;z-index:10005;display:flex;flex-direction:column;gap:10px;}
 .btn-3gach-toggle{
-  background:rgba(10,2,4,.9);
-  border:2px solid var(--neon-red);
-  color:var(--neon-red);
+  background:rgba(4,3,10,.9);
+  border:2px solid var(--neon-cyan);
+  color:var(--neon-cyan);
   width:46px;height:46px;font-size:18px;
   border-radius:12px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  transition:all .25s;
-  backdrop-filter:blur(10px);
-  box-shadow:0 0 20px rgba(255,0,60,.4);
+  transition:all .25s;backdrop-filter:blur(10px);
+  box-shadow:0 0 20px rgba(0,240,255,.4);
 }
 .btn-3gach-toggle:active{transform:scale(.9);}
-.btn-3gach-toggle:hover{background:rgba(255,0,60,.2);box-shadow:0 0 30px rgba(255,0,60,.7);}
+.btn-3gach-toggle:hover{background:rgba(0,240,255,.2);box-shadow:0 0 30px rgba(0,240,255,.7);}
 .dropdown-menu-3gach{
   display:none;position:absolute;top:54px;left:0;
-  background:rgba(15,2,6,.97);
-  border:1px solid var(--neon-red);
+  background:rgba(10,5,20,.97);
+  border:1px solid var(--neon-cyan);
   border-radius:14px;width:240px;padding:10px;
   flex-direction:column;gap:6px;z-index:10006;
   backdrop-filter:blur(15px);
-  box-shadow:0 20px 50px rgba(0,0,0,.8),0 0 30px rgba(255,0,60,.2);
+  box-shadow:0 20px 50px rgba(0,0,0,.8),0 0 30px rgba(0,240,255,.2);
 }
 .dropdown-menu-3gach.show{display:flex;animation:menuIn .25s ease;}
 @keyframes menuIn{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
 .menu-3gach-item{
   background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,0,60,.25);
+  border:1px solid rgba(0,240,255,.25);
   color:#fff;padding:11px 14px;
   font-size:13px;font-weight:700;border-radius:8px;
   cursor:pointer;text-align:left;
   display:flex;align-items:center;gap:12px;
   transition:all .2s;font-family:var(--font-body);
 }
-.menu-3gach-item:hover{background:rgba(255,0,60,.15);border-color:var(--neon-red);}
-.menu-3gach-item:active{background:rgba(255,0,60,.25);}
-.menu-3gach-item.exit-btn{background:rgba(255,0,60,.15);border-color:var(--neon-red);color:#ff99aa;}
+.menu-3gach-item:hover{background:rgba(0,240,255,.15);border-color:var(--neon-cyan);}
+.menu-3gach-item:active{background:rgba(0,240,255,.25);}
+.menu-3gach-item.exit-btn{background:rgba(255,45,149,.15);border-color:var(--neon-pink);color:#ff99cc;}
 
-/* Robot AI */
-.robot-wrapper-node{
-  position:absolute;z-index:10000;
-  bottom:80px;right:20px;
-  will-change:transform;touch-action:none;
-  transform-origin:center center;
-  transition:transform .25s ease;
-}
-.robot-projection-container{
-  width:350px;max-width:90vw;position:relative;
-  cursor:grab;display:flex;flex-direction:column;align-items:center;
-  user-select:none;
-  filter:drop-shadow(0 0 30px rgba(255,0,60,.3));
-}
+/* === ROBOT - GIỮ NGUYÊN === */
+.robot-wrapper-node{position:absolute;z-index:10000;bottom:80px;right:20px;will-change:transform;touch-action:none;transform-origin:center center;transition:transform .25s ease;}
+.robot-projection-container{width:340px;max-width:90vw;position:relative;cursor:grab;display:flex;flex-direction:column;align-items:center;user-select:none;filter:drop-shadow(0 0 30px rgba(0,240,255,.3));}
 .robot-projection-container:active{cursor:grabbing;}
-.robot-gif{
-  width:340px;max-width:100%;height:auto;
-  aspect-ratio:1/1;object-fit:contain;
-  pointer-events:none;
-  filter:drop-shadow(0 0 20px rgba(255,0,60,.4)) drop-shadow(0 0 60px rgba(255,0,60,.2));
-  animation:robotFloat 4s ease-in-out infinite;
-}
+.robot-gif{width:330px;max-width:100%;height:auto;aspect-ratio:1/1;object-fit:contain;pointer-events:none;filter:drop-shadow(0 0 20px rgba(0,240,255,.4)) drop-shadow(0 0 60px rgba(176,38,255,.2));animation:robotFloat 4s ease-in-out infinite;}
 @keyframes robotFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
-.bot-info-panel{
-  position:absolute;top:54%;left:48%;
-  transform:translateY(-50%);
-  width:150px;display:flex;flex-direction:column;gap:10px;
-  pointer-events:none;z-index:10;
-}
-.bot-overlay-box{
-  background:rgba(0,0,0,.5);
-  border:1px solid rgba(255,204,0,.3);
-  border-radius:6px;
-  padding:3px 8px;
-  text-align:left;white-space:nowrap;
-  font-size:14px;font-weight:800;
-  color:var(--neon-gold);
-  text-shadow:0 1px 4px #000,0 0 10px rgba(255,204,0,.9);
-  letter-spacing:.5px;
-  transition:opacity .3s ease;
-  font-family:var(--font-body);
-  backdrop-filter:blur(5px);
-}
-.bot-pred{font-size:16px;color:#fff;text-shadow:0 1px 4px #000,0 0 12px rgba(255,45,149,.9);}
+.bot-info-panel{position:absolute;top:54%;left:48%;transform:translateY(-50%);width:145px;display:flex;flex-direction:column;gap:8px;pointer-events:none;z-index:10;}
+.bot-overlay-box{background:rgba(0,0,0,.45);border:1px solid rgba(255,215,0,.3);border-radius:6px;padding:3px 8px;text-align:left;white-space:nowrap;font-size:14px;font-weight:800;color:var(--neon-gold);text-shadow:0 1px 4px #000,0 0 10px rgba(255,215,0,.9);letter-spacing:.5px;transition:opacity .3s ease;font-family:var(--font-body);backdrop-filter:blur(5px);}
+.bot-pred{font-size:16px;color:#fff;text-shadow:0 1px 4px #000,0 0 12px rgba(0,240,255,.9);}
 .bot-overlay-box.loading-dots{animation:pulse-dots .8s infinite alternate;opacity:.5;}
 @keyframes pulse-dots{0%{opacity:.3;}100%{opacity:1;}}
 
 /* Badge tiêu đề game */
 .game-title-badge{
   position:absolute;top:18px;left:76px;z-index:10004;
-  background:rgba(10,2,4,.9);
-  border:2px solid var(--neon-red);
+  background:rgba(4,3,10,.9);
+  border:2px solid var(--neon-cyan);
   border-radius:12px;padding:9px 18px;
   font-size:13px;font-weight:900;letter-spacing:1.5px;
   color:#fff;display:flex;align-items:center;gap:10px;
-  box-shadow:0 0 25px rgba(255,0,60,.5);
-  backdrop-filter:blur(10px);
-  font-family:var(--font-display);
+  box-shadow:0 0 25px rgba(0,240,255,.5);
+  backdrop-filter:blur(10px);font-family:var(--font-display);
 }
-.game-title-badge i{color:var(--neon-gold);filter:drop-shadow(0 0 6px rgba(255,204,0,.8));}
+.game-title-badge i{color:var(--neon-gold);filter:drop-shadow(0 0 6px rgba(255,215,0,.8));}
 
 /* Toast */
 #toast{
   position:fixed;bottom:30px;left:50%;
   transform:translateX(-50%) translateY(80px);
-  background:linear-gradient(135deg,var(--neon-red),var(--neon-pink));
+  background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));
   color:#fff;padding:14px 26px;border-radius:12px;
   font-size:.9rem;font-weight:800;letter-spacing:.5px;
   z-index:200000;opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);
   pointer-events:none;max-width:90vw;text-align:center;
-  box-shadow:0 15px 40px rgba(0,0,0,.7),0 0 30px rgba(255,0,60,.5);
+  box-shadow:0 15px 40px rgba(0,0,0,.7),0 0 30px rgba(0,240,255,.5);
   font-family:var(--font-body);
 }
 #toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
@@ -420,9 +365,7 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:70px 28p
 </head>
 <body>
 
-<!-- ============================================================
-     BẢO MẬT TỐI THƯỢNG (CHỐNG DEVTOOLS - BẢN FIX LỖI CHROME)
-     ============================================================ -->
+<!-- BẢO MẬT GIỮ NGUYÊN -->
 <script>
 (function() {
   document.addEventListener('contextmenu', e => e.preventDefault());
@@ -447,7 +390,7 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:70px 28p
         if (!document.getElementById('__anti_debug_overlay')) {
           const overlay = document.createElement('div');
           overlay.id = '__anti_debug_overlay';
-          overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999999;color:#ff003c;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;flex-direction:column;text-align:center;font-family:sans-serif;';
+          overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999999;color:#00f0ff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;flex-direction:column;text-align:center;font-family:sans-serif;';
           overlay.innerHTML = '<div>⛔ TRUY CẬP BỊ CHẶN</div><div style="font-size:16px;color:#fff;margin-top:10px;">Vui lòng đóng DevTools (F12) để tiếp tục!</div>';
           document.body.appendChild(overlay);
         }
@@ -473,7 +416,7 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:70px 28p
     </div>
     <div class="topbar-right">
       <div class="admin-chip"><i class="fas fa-crown"></i><span>@tranhoang2286</span></div>
-      <a href="/hoang-tool-control-2286?key=123456" class="btn-exit-top" style="background:rgba(59,130,246,.1);border-color:#3b82f6;color:#93c5fd;">
+      <a href="/hoang-tool-control-2286?key=123456" class="btn-exit-top" style="background:rgba(37,99,235,.1);border-color:#2563eb;color:#93c5fd;">
         <i class="fas fa-user-shield"></i><span>Quản trị</span>
       </a>
       <button class="btn-exit-top" onclick="exitApp()">
@@ -490,7 +433,6 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:70px 28p
     </div>
 
     <div class="game-grid">
-      <!-- Game cũ: LC79 MD -->
       <div class="game-card" onclick="playGame('md5')">
         <div class="game-logo"><img src="https://i.postimg.cc/C16fC9My/IMG-0544.jpg" alt="LC79 MD"></div>
         <div class="game-info">
@@ -500,7 +442,6 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:70px 28p
           <button class="btn-play" onclick="event.stopPropagation();playGame('md5')"><i class="fas fa-play"></i> BẮT ĐẦU</button>
         </div>
       </div>
-      <!-- Game cũ: LC79 Tài Xỉu -->
       <div class="game-card" onclick="playGame('tx')">
         <div class="game-logo"><img src="https://i.postimg.cc/C16fC9My/IMG-0544.jpg" alt="LC79 Tài Xỉu"></div>
         <div class="game-info">
@@ -508,28 +449,6 @@ main{position:relative;z-index:2;max-width:1280px;margin:0 auto;padding:70px 28p
           <div class="game-tagline">Tool Tài Xỉu — AI dự đoán Tài / Xỉu chuẩn xác</div>
           <div class="game-status"><i class="fas fa-circle"></i> ONLINE</div>
           <button class="btn-play" onclick="event.stopPropagation();playGame('tx')"><i class="fas fa-play"></i> BẮT ĐẦU</button>
-        </div>
-      </div>
-
-      <!-- ===== GAME MỚI: MAX789 MD5 ===== -->
-      <div class="game-card" onclick="playGame('max789_md5')">
-        <div class="game-logo"><img src="https://i.postimg.cc/0yRZTNck/IMG-2232.jpg" alt="Max789 MD5"></div>
-        <div class="game-info">
-          <div class="game-name">MAX789 MD5</div>
-          <div class="game-tagline">Tool MD5 Max789 — Phân tích & dự đoán phiên</div>
-          <div class="game-status"><i class="fas fa-circle"></i> ONLINE</div>
-          <button class="btn-play" onclick="event.stopPropagation();playGame('max789_md5')"><i class="fas fa-play"></i> BẮT ĐẦU</button>
-        </div>
-      </div>
-
-      <!-- ===== GAME MỚI: MAX789 TÀI XỈU ===== -->
-      <div class="game-card" onclick="playGame('max789_tx')">
-        <div class="game-logo"><img src="https://i.postimg.cc/0yRZTNck/IMG-2232.jpg" alt="Max789 Tài Xỉu"></div>
-        <div class="game-info">
-          <div class="game-name">MAX789 TÀI XỈU</div>
-          <div class="game-tagline">Tool Tài Xỉu Max789 — AI dự đoán Tài / Xỉu</div>
-          <div class="game-status"><i class="fas fa-circle"></i> ONLINE</div>
-          <button class="btn-play" onclick="event.stopPropagation();playGame('max789_tx')"><i class="fas fa-play"></i> BẮT ĐẦU</button>
         </div>
       </div>
     </div>
@@ -623,22 +542,9 @@ function exitApp(){
   }
 }
 
-// ====== CẤU HÌNH GAME ======
 const GAMES = {
   md5: { name: 'LC79 MD', icon: 'fa-fingerprint', gameUrl: 'https://play.lc79h.vin', toolKey: 'md5' },
-  tx: { name: 'LC79 TÀI XỈU', icon: 'fa-dice', gameUrl: 'https://play.lc79h.vin', toolKey: 'tx' },
-  max789_md5: { 
-    name: 'MAX789 MD5', 
-    icon: 'fa-fingerprint', 
-    gameUrl: 'https://play.max789h.vin', 
-    toolKey: 'max789_md5'
-  },
-  max789_tx: { 
-    name: 'MAX789 TÀI XỈU', 
-    icon: 'fa-dice', 
-    gameUrl: 'https://play.max789h.vin', 
-    toolKey: 'max789_tx' 
-  }
+  tx: { name: 'LC79 TÀI XỈU', icon: 'fa-dice', gameUrl: 'https://play.lc79h.vin', toolKey: 'tx' }
 };
 
 let currentGame = null;
@@ -656,47 +562,17 @@ async function refreshToken() {
     if (j.ok) { toolToken = j.token; tokenExp = Number(j.token.split('.')[0]); }
   } catch(e){}
 }
-
 async function fetchPrediction(toolKey) {
-  let apiUrl = '';
-  if (toolKey === 'md5' || toolKey === 'tx') {
-    if (!toolToken || Date.now() > tokenExp - 30000) await refreshToken();
-    if (!toolToken) throw new Error('Không lấy được token');
-    apiUrl = `/api/tool/predict?game=${encodeURIComponent(toolKey)}`;
-    const r = await fetch(apiUrl, {
-      headers: { 'Accept': 'application/json', 'X-Tool-Token': toolToken }
-    });
-    if (r.status === 401) { await refreshToken(); return fetchPrediction(toolKey); }
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const j = await r.json();
-    if (!j.ok) throw new Error(j.msg || 'API lỗi');
-    return j.data;
-  } 
-  else if (toolKey === 'max789_md5') {
-    apiUrl = 'https://max789-sex.onrender.com/api/md5/max789';
-    const r = await fetch(apiUrl);
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const j = await r.json();
-    return {
-      phien: j.phien_hien_tai || j.phien_truoc || '--',
-      du_doan: j.du_doan || '--',
-      tin_cay: j.do_tin_cay || '--',
-    };
-  } 
-  else if (toolKey === 'max789_tx') {
-    apiUrl = 'https://max789-sex.onrender.com/api/taixiu/max789';
-    const r = await fetch(apiUrl);
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const j = await r.json();
-    return {
-      phien: j.phien_hien_tai || j.phien_truoc || '--',
-      du_doan: j.du_doan || '--',
-      tin_cay: j.do_tin_cay || '--',
-    };
-  } 
-  else {
-    throw new Error('Tool key không hợp lệ');
-  }
+  if (!toolToken || Date.now() > tokenExp - 30000) await refreshToken();
+  if (!toolToken) throw new Error('Không lấy được token');
+  const r = await fetch(`/api/tool/predict?game=${encodeURIComponent(toolKey)}`, {
+    headers: { 'Accept': 'application/json', 'X-Tool-Token': toolToken }
+  });
+  if (r.status === 401) { await refreshToken(); return fetchPrediction(toolKey); }
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.msg || 'API lỗi');
+  return j.data;
 }
 
 function playGame(key){
@@ -822,7 +698,7 @@ function renderPrediction(data){
       particles.push({
         x: Math.random()*window.innerWidth, y: Math.random()*window.innerHeight,
         vx:(Math.random()-.5)*.4, vy:(Math.random()-.5)*.4,
-        r: .8+Math.random()*2, hue: Math.random()<.5?350:(Math.random()<.5?320:200)
+        r: .8+Math.random()*2, hue: Math.random()<.5?185:(Math.random()<.5?275:320)
       });
     }
   }
@@ -847,21 +723,21 @@ function renderPrediction(data){
       for (let j=i+1;j<particles.length;j++){
         const b = particles[j], d = Math.hypot(a.x-b.x,a.y-b.y);
         if (d < 140){
-          ctx.strokeStyle = `hsla(350,100%,60%,${(1-d/140)*.3})`;
+          ctx.strokeStyle = `hsla(185,100%,60%,${(1-d/140)*.3})`;
           ctx.lineWidth = .6;
           ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
         }
       }
       if (dm < 200){
-        ctx.strokeStyle = `hsla(320,100%,65%,${(1-dm/200)*.6})`;
+        ctx.strokeStyle = `hsla(275,100%,65%,${(1-dm/200)*.6})`;
         ctx.lineWidth = 1;
         ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(mouse.x,mouse.y); ctx.stroke();
       }
     }
     if (mouse.x > 0){
       const grd = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 200);
-      grd.addColorStop(0,'rgba(255,0,60,.15)');
-      grd.addColorStop(1,'rgba(255,0,60,0)');
+      grd.addColorStop(0,'rgba(0,240,255,.15)');
+      grd.addColorStop(1,'rgba(0,240,255,0)');
       ctx.fillStyle = grd;
       ctx.beginPath(); ctx.arc(mouse.x, mouse.y, 200, 0, Math.PI*2); ctx.fill();
     }
